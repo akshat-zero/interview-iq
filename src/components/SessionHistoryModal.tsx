@@ -28,15 +28,15 @@ export const SessionHistoryModal: React.FC<SessionHistoryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/75 p-4 backdrop-blur-xs">
-      <div className="settings-dialog-pop relative my-8 w-full max-w-2xl rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#241910]/85 p-4 backdrop-blur-sm">
+      <div className="settings-dialog-pop relative my-8 w-full max-w-2xl rounded-2xl border border-[#513A42] bg-[#44323A] p-6 text-[#E9DFDF] shadow-2xl shadow-[#482832]/60 font-sans-editorial">
         {/* Header */}
-        <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
+        <div className="mb-4 flex items-center justify-between border-b border-[#513A42] pb-3">
           <div>
-            <div className="font-ui text-xs uppercase tracking-wider text-muted-foreground">
+            <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5]">
               Session Archive
             </div>
-            <h2 className="font-title mt-0.5 text-2xl text-foreground">
+            <h2 className="font-editorial mt-0.5 text-2xl text-[#F4EDEF] font-bold">
               Completed Sessions ({sessions.length})
             </h2>
           </div>
@@ -46,7 +46,7 @@ export const SessionHistoryModal: React.FC<SessionHistoryModalProps> = ({
               <button
                 type="button"
                 onClick={onClearHistory}
-                className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 font-ui text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-red-400"
+                className="flex items-center gap-1.5 rounded-lg border border-[#513A42] bg-[#302329] px-2.5 py-1 font-mono text-xs text-[#D5BFC3] transition-colors hover:border-red-500/50 hover:bg-red-950/20 hover:text-red-300"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Clear all</span>
@@ -56,7 +56,7 @@ export const SessionHistoryModal: React.FC<SessionHistoryModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#B18A91] transition-colors hover:bg-[#3B2931] hover:text-[#F4EDEF]"
             >
               <X className="w-4 h-4" />
             </button>
@@ -65,16 +65,16 @@ export const SessionHistoryModal: React.FC<SessionHistoryModalProps> = ({
 
         {/* List */}
         {sessions.length === 0 ? (
-          <div className="rounded-xl border border-border bg-background/60 py-12 text-center">
-            <p className="font-ui text-sm text-muted-foreground">
+          <div className="rounded-xl border border-[#513A42] bg-[#302329] py-12 text-center">
+            <p className="font-sans-editorial text-sm text-[#F4EDEF]">
               No completed sessions yet.
             </p>
-            <p className="mt-1 font-ui text-xs text-muted-foreground/70">
+            <p className="mt-1 font-sans-editorial text-xs text-[#B9A5AA]">
               Start an interview session to record transcripts and 4-pillar evaluations.
             </p>
           </div>
         ) : (
-          <div className="max-h-96 space-y-1.5 overflow-y-auto pr-1">
+          <div className="max-h-96 space-y-2 overflow-y-auto pr-1">
             {sessions.map((session) => (
               <button
                 key={session.id}
@@ -83,13 +83,13 @@ export const SessionHistoryModal: React.FC<SessionHistoryModalProps> = ({
                   onSelectSession(session);
                   onClose();
                 }}
-                className="flex w-full items-center justify-between gap-4 rounded-xl border border-border bg-background/60 px-4 py-3 text-left transition-colors hover:bg-accent"
+                className="flex w-full items-center justify-between gap-4 rounded-xl border border-[#513A42] bg-[#302329] px-4 py-3 text-left transition-all hover:bg-[#3B2931] hover:border-[#C69BA5]"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="truncate font-prose text-base font-medium text-foreground">
+                  <div className="truncate font-sans-editorial text-base font-semibold text-[#F4EDEF]">
                     {session.roleName}
                   </div>
-                  <div className="mt-0.5 flex items-center gap-2 font-ui text-xs text-muted-foreground">
+                  <div className="mt-0.5 flex items-center gap-2 font-mono text-xs text-[#B18A91]">
                     <span>{session.domainTitle}</span>
                     <span>·</span>
                     <span>{session.evaluations.length} questions</span>
@@ -101,7 +101,7 @@ export const SessionHistoryModal: React.FC<SessionHistoryModalProps> = ({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2.5">
-                  <span className="font-mono text-sm font-medium tabular-nums text-foreground">
+                  <span className="font-mono text-sm font-semibold tabular-nums text-[#F4EDEF]">
                     {session.overallScore}%
                   </span>
                   <RubricBadge type="recommendation" value={session.hireVerdict} />
@@ -111,11 +111,11 @@ export const SessionHistoryModal: React.FC<SessionHistoryModalProps> = ({
           </div>
         )}
 
-        <div className="mt-5 flex justify-end border-t border-border pt-4">
+        <div className="mt-5 flex justify-end border-t border-[#513A42] pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="h-9 rounded-[6px] border border-border bg-background px-4 font-ui text-xs text-foreground transition-colors hover:bg-accent"
+            className="h-9 rounded-lg border border-[#513A42] bg-[#3B2931] px-5 font-mono text-xs uppercase tracking-wider text-[#F4EDEF] transition-colors hover:bg-[#754653]"
           >
             Close
           </button>

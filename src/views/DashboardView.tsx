@@ -179,7 +179,7 @@ Questions Completed: ${session.evaluations.length}`;
   };
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
+    <div className="flex h-dvh flex-col overflow-hidden bg-[#241910] text-[#E9DFDF] texture-plum font-sans-editorial">
       {/* LearnHarness TopBar */}
       <TopBar
         sidebarOpen={sidebarOpen}
@@ -190,7 +190,7 @@ Questions Completed: ${session.evaluations.length}`;
             <button
               type="button"
               onClick={handleCopySummary}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#513A42] bg-[#3B2931] px-3 py-1.5 text-[#D5BFC3] hover:border-[#C69BA5] hover:text-[#F4EDEF] transition-colors"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-[#C69BA5]" /> : <Copy className="h-3.5 w-3.5" />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
@@ -198,7 +198,7 @@ Questions Completed: ${session.evaluations.length}`;
             <button
               type="button"
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#513A42] bg-[#3B2931] px-3 py-1.5 text-[#D5BFC3] hover:border-[#C69BA5] hover:text-[#F4EDEF] transition-colors"
             >
               <Download className="h-3.5 w-3.5" />
               <span>Print / PDF</span>
@@ -206,9 +206,9 @@ Questions Completed: ${session.evaluations.length}`;
             <button
               type="button"
               onClick={onStartNewSession}
-              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1 font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#C69BA5]/60 bg-[#754653] px-3.5 py-1.5 font-bold text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910] transition-all shadow-md shadow-[#482832]/50"
             >
-              <RefreshCw className="h-3 w-3" />
+              <RefreshCw className="h-3.5 w-3.5" />
               <span>New Session</span>
             </button>
           </div>
@@ -219,13 +219,13 @@ Questions Completed: ${session.evaluations.length}`;
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="mx-auto max-w-4xl px-6 py-8 space-y-8 pb-20">
           {/* Executive Summary Card */}
-          <div className="rounded-xl border border-border bg-card p-6 space-y-5">
-            <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-border pb-4">
+          <div className="rounded-2xl border border-[#513A42] bg-[#302329] p-6 sm:p-8 space-y-6 shadow-2xl shadow-[#241910]/70">
+            <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-[#513A42] pb-5">
               <div>
-                <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                <div className="font-mono text-xs uppercase tracking-widest text-[#C69BA5]">
                   SESSION SCORECARD · {session.domainTitle.toUpperCase()} · {formatDate(session.createdAt)} · {formatTime(session.totalTimeSeconds)}
                 </div>
-                <h2 className="mt-1 font-title text-2xl text-foreground">
+                <h2 className="mt-1 font-editorial text-3xl sm:text-4xl text-[#F4EDEF] font-bold">
                   {session.roleName} — {session.overallScore}/100
                 </h2>
               </div>
@@ -234,7 +234,7 @@ Questions Completed: ${session.evaluations.length}`;
 
             <ConfidenceRail value={session.overallScore} />
 
-            <p className="font-prose text-base text-foreground/90 leading-relaxed">
+            <p className="font-sans-editorial text-base text-[#D5BFC3] leading-relaxed">
               {session.overallScore >= 85
                 ? `Candidate delivered an exceptional interview session for ${session.roleName}. Answers demonstrated deep conceptual command, explicit awareness of trade-offs, and crisp executive communication.`
                 : session.overallScore >= 75
@@ -245,28 +245,28 @@ Questions Completed: ${session.evaluations.length}`;
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-              <div className="rounded-lg border border-border bg-background/60 p-4">
-                <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mb-2">
+              <div className="rounded-xl border border-[#513A42] bg-[#241910] p-4 shadow-inner">
+                <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mb-2 font-semibold">
                   + Key Strengths
                 </div>
-                <ul className="space-y-1.5 text-sm font-prose text-foreground/90">
+                <ul className="space-y-1.5 text-sm font-sans-editorial text-[#E9DFDF]">
                   {session.keyStrengths.map((str, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span className="font-mono text-muted-foreground">·</span>
+                      <span className="font-mono text-[#C69BA5]">✓</span>
                       <span>{str}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="rounded-lg border border-border bg-background/60 p-4">
-                <div className="font-mono text-xs uppercase tracking-wider text-[#B18A91] mb-2">
+              <div className="rounded-xl border border-[#513A42] bg-[#241910] p-4 shadow-inner">
+                <div className="font-mono text-xs uppercase tracking-wider text-[#B18A91] mb-2 font-semibold">
                   - Priority Focus Areas
                 </div>
-                <ul className="space-y-1.5 text-sm font-prose text-foreground/90">
+                <ul className="space-y-1.5 text-sm font-sans-editorial text-[#D5BFC3]">
                   {session.criticalImprovements.map((imp, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span className="font-mono text-muted-foreground">·</span>
+                      <span className="font-mono text-[#B18A91]">–</span>
                       <span>{imp}</span>
                     </li>
                   ))}
@@ -278,10 +278,10 @@ Questions Completed: ${session.evaluations.length}`;
           {/* 4-Pillar Rubric Breakdown */}
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
-              <h3 className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+              <h3 className="font-mono text-xs uppercase tracking-wider text-[#C69BA5]">
                 4-PILLAR RUBRIC AVERAGES
               </h3>
-              <span className="font-mono text-xs text-muted-foreground">
+              <span className="font-mono text-xs text-[#B9A5AA]">
                 {session.evaluations.length} questions evaluated
               </span>
             </div>
@@ -296,7 +296,7 @@ Questions Completed: ${session.evaluations.length}`;
 
           {/* Question-by-Question Transcript & Deep Dive */}
           <div className="space-y-3">
-            <h3 className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-[#C69BA5]">
               QUESTION-BY-QUESTION TRANSCRIPT
             </h3>
 
@@ -306,48 +306,48 @@ Questions Completed: ${session.evaluations.length}`;
                 return (
                   <div
                     key={evaluation.questionId}
-                    className="rounded-xl border border-border bg-card overflow-hidden"
+                    className="rounded-xl border border-[#513A42] bg-[#302329] overflow-hidden shadow-md"
                   >
                     <button
                       type="button"
                       onClick={() =>
                         setExpandedQuestionId(isExpanded ? null : evaluation.questionId)
                       }
-                      className="w-full px-5 py-4 flex items-center justify-between gap-4 text-left hover:bg-accent/50 transition-colors"
+                      className="w-full px-5 py-4 flex items-center justify-between gap-4 text-left hover:bg-[#3B2931]/60 transition-colors"
                     >
                       <div className="min-w-0 flex-1">
-                        <div className="font-mono text-xs text-muted-foreground">
+                        <div className="font-mono text-xs text-[#B18A91]">
                           Q{idx + 1} · {evaluation.category} · {evaluation.inputMethod === 'voice' ? 'Spoken' : 'Written'} ({evaluation.timeSpentSeconds}s)
                         </div>
-                        <div className="mt-1 font-prose text-base text-foreground truncate">
+                        <div className="mt-1 font-sans-editorial text-base text-[#F4EDEF] truncate">
                           {evaluation.questionPrompt}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3 shrink-0">
-                        <span className="font-mono text-sm text-foreground">
+                        <span className="font-mono text-sm text-[#F4EDEF] font-semibold">
                           {evaluation.overallScore}%
                         </span>
                         <RubricBadge type="grade" value={evaluation.grade} />
                         {isExpanded ? (
-                          <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                          <ChevronUp className="h-4 w-4 text-[#C69BA5]" />
                         ) : (
-                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                          <ChevronDown className="h-4 w-4 text-[#B18A91]" />
                         )}
                       </div>
                     </button>
 
                     {isExpanded && (
-                      <div className="border-t border-border bg-background/40 px-5 py-5 space-y-5">
+                      <div className="border-t border-[#513A42] bg-[#241910]/60 px-5 py-5 space-y-5">
                         <div className="lh-prose">
-                          <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                          <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mb-1">
                             Prompt
                           </div>
-                          <p>{evaluation.questionPrompt}</p>
+                          <p className="text-[#F4EDEF] font-sans-editorial">{evaluation.questionPrompt}</p>
                         </div>
 
                         <div>
-                          <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                          <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mb-1">
                             Your Response
                           </div>
                           <ThinkingBlock>{evaluation.userAnswer}</ThinkingBlock>
@@ -360,11 +360,12 @@ Questions Completed: ${session.evaluations.length}`;
                           <PillarCard pillar={evaluation.pillars.actionableGaps} />
                         </div>
 
-                        <div className="rounded-lg border border-border bg-card p-4">
-                          <div className="font-mono text-xs uppercase tracking-wider text-foreground mb-2">
-                            Reference Model Answer (98/100)
+                        <div className="rounded-xl border border-[#754653]/60 bg-[#3B2931] p-5 shadow-md">
+                          <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mb-2 font-semibold flex items-center gap-2">
+                            <span>✦</span>
+                            <span>Reference Model Answer (98/100)</span>
                           </div>
-                          <div className="font-prose text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                          <div className="font-sans-editorial text-sm text-[#F4EDEF] whitespace-pre-wrap leading-relaxed">
                             {evaluation.elevatedModelAnswer}
                           </div>
                         </div>
@@ -377,18 +378,18 @@ Questions Completed: ${session.evaluations.length}`;
           </div>
 
           {/* Bottom Actions */}
-          <div className="no-print flex items-center justify-between border-t border-border pt-6">
+          <div className="no-print flex items-center justify-between border-t border-[#513A42] pt-6">
             <button
               type="button"
               onClick={onExitHome}
-              className="rounded-md border border-border bg-card px-4 py-2 font-mono text-xs text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              className="rounded-lg border border-[#513A42] bg-[#3B2931] px-4 py-2 font-mono text-xs text-[#D5BFC3] hover:border-[#C69BA5] hover:text-[#F4EDEF] transition-colors"
             >
               ← Return to Home
             </button>
             <button
               type="button"
               onClick={onStartNewSession}
-              className="rounded-md bg-primary px-4 py-2 font-sans text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+              className="rounded-lg border border-[#C69BA5]/60 bg-[#754653] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910] transition-all shadow-md shadow-[#482832]/50"
             >
               Start another session →
             </button>

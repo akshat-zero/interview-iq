@@ -120,9 +120,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       }`}
       aria-hidden={!open}
     >
-      <div className="flex h-dvh w-72 flex-col border-r border-border bg-background select-none">
+      <div className="flex h-dvh w-72 flex-col border-r border-[#513A42] bg-[#482832] select-none text-[#E9DFDF]">
         {/* Top Wordmark Band (InterviewIQ mark + title + close icon) */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#513A42]">
           <button
             type="button"
             onClick={onNavigateHome}
@@ -133,10 +133,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             <LhMark className="w-8 h-8" iconClassName="w-4 h-4 text-[#C69BA5]" />
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold tracking-tight text-foreground font-sans">
+                <span className="text-sm font-bold tracking-tight text-[#F4EDEF] font-editorial">
                   Interview<span className="text-[#C69BA5]">IQ</span>
                 </span>
-                <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-[#482832] text-[#C69BA5] uppercase border border-[#513A42]">MVP</span>
+                <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-[#302329] text-[#C69BA5] uppercase border border-[#513A42]">MVP</span>
               </div>
             </div>
           </button>
@@ -146,36 +146,36 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onToggle}
             aria-label="Close sidebar"
             title="Close sidebar (⌘B)"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#D5BFC3] transition-colors hover:bg-[#5A333E] hover:text-[#F4EDEF]"
           >
             <PanelLeftClose className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Two Stacked Doors: + Teaching and Practice (exact sidebar.tsx lines 699-720) */}
-        <div className="mx-3 mb-2 flex flex-col gap-1.5">
+        {/* Two Stacked Doors: + Teaching and Practice */}
+        <div className="mx-3 my-2 flex flex-col gap-1.5">
           <button
             type="button"
             onClick={onOpenDomainSelector}
-            className="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 font-ui text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 font-mono text-xs uppercase tracking-wider text-[#D5BFC3] transition-colors hover:bg-[#5A333E] hover:text-[#F4EDEF]"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="w-3.5 h-3.5 text-[#C69BA5]" />
             <span>Teaching</span>
           </button>
 
           <button
             type="button"
             onClick={onOpenStudy}
-            className="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 font-ui text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 font-mono text-xs uppercase tracking-wider text-[#D5BFC3] transition-colors hover:bg-[#5A333E] hover:text-[#F4EDEF]"
           >
-            <Dumbbell className="w-3 h-3" />
+            <Dumbbell className="w-3.5 h-3.5 text-[#C69BA5]" />
             <span>Practice</span>
           </button>
         </div>
 
-        {/* SESSIONS + Search Input (exact sidebar.tsx lines 722-781) */}
+        {/* SESSIONS + Search Input */}
         <div className="mx-3 mb-2 flex items-center gap-2">
-          <span className="font-ui text-xs uppercase tracking-widest text-muted-foreground/70">
+          <span className="font-mono text-xs uppercase tracking-widest text-[#B18A91]">
             Sessions
           </span>
           <span className="relative flex-1">
@@ -185,23 +185,23 @@ export const Navbar: React.FC<NavbarProps> = ({
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search…"
               aria-label="Search sessions"
-              className="h-6 w-full rounded-sm border border-border bg-background pl-6 pr-2 font-ui text-xs text-foreground placeholder:text-muted-foreground/60"
+              className="h-7 w-full rounded-md border border-[#513A42] bg-[#302329] pl-6 pr-2 font-mono text-xs text-[#F4EDEF] placeholder:text-[#B9A5AA]/60 outline-none focus:border-[#C69BA5]"
             />
-            <Search className="pointer-events-none absolute left-1.5 top-1/2 w-3 h-3 -translate-y-1/2 text-muted-foreground/70" />
+            <Search className="pointer-events-none absolute left-1.5 top-1/2 w-3.5 h-3.5 -translate-y-1/2 text-[#B18A91]" />
           </span>
         </div>
 
-        {/* Three-Way Filter: TEACHING | PRACTICE | ALL (exact sidebar.tsx lines 790-807) */}
-        <div className="mx-3 flex items-center gap-0.5 rounded-md border border-border/60 bg-background p-0.5">
+        {/* Three-Way Filter: TEACHING | PRACTICE | ALL */}
+        <div className="mx-3 flex items-center gap-0.5 rounded-lg border border-[#513A42] bg-[#302329] p-0.5">
           {(['teach', 'practice', 'all'] as const).map((f) => (
             <button
               key={f}
               type="button"
               onClick={() => setKindFilter(f)}
-              className={`flex-1 rounded-sm px-2 py-1 font-ui text-[11px] uppercase tracking-wider transition-colors ${
+              className={`flex-1 rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-wider transition-colors ${
                 kindFilter === f
-                  ? 'bg-accent text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-[#754653] text-[#F4EDEF] border border-[#C69BA5]/60 font-semibold shadow-sm'
+                  : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
               }`}
             >
               {f === 'teach' ? 'Teaching' : f === 'practice' ? 'Practice' : 'All'}
@@ -209,7 +209,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           ))}
         </div>
 
-        {/* Scrollable Session List (exact SessionRow geometry) */}
+        {/* Scrollable Session List */}
         <div className="flex-1 overflow-y-auto p-2">
           {filteredSaved.map((session) => {
             const isActive =
@@ -219,15 +219,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 key={session.id}
                 type="button"
                 onClick={() => onSelectSession?.(session)}
-                className={`relative mb-0.5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-accent ${
-                  isActive ? 'bg-accent' : ''
+                className={`relative mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors border ${
+                  isActive
+                    ? 'border-[#C69BA5] bg-[#754653]/40 text-[#F4EDEF]'
+                    : 'border-transparent hover:bg-[#5A333E] text-[#D5BFC3]'
                 }`}
               >
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-prose text-[16px] text-foreground">
+                  <span className="block truncate font-sans-editorial text-[15px] font-medium text-[#F4EDEF]">
                     {session.roleName}
                   </span>
-                  <span className="block font-ui text-xs text-muted-foreground">
+                  <span className="block font-mono text-xs text-[#B18A91]">
                     {session.overallScore}% · {timeAgo(session.createdAt)}
                   </span>
                 </span>
@@ -251,54 +253,56 @@ export const Navbar: React.FC<NavbarProps> = ({
                     onQuickStartRole(track.domainId, track.roleId, 'senior', 3);
                   }
                 }}
-                className={`relative mb-0.5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-accent ${
-                  isActive ? 'bg-accent' : ''
+                className={`relative mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors border ${
+                  isActive
+                    ? 'border-[#C69BA5] bg-[#754653]/40 text-[#F4EDEF]'
+                    : 'border-transparent hover:bg-[#5A333E] text-[#D5BFC3]'
                 }`}
               >
-                {isActive && <BrailleSpinner />}
+                {isActive && <BrailleSpinner className="h-3 w-auto text-[#C69BA5]" />}
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-prose text-[16px] text-foreground">
+                  <span className="block truncate font-sans-editorial text-[15px] font-medium text-[#F4EDEF]">
                     {track.title}
                   </span>
-                  <span className="block font-ui text-xs text-muted-foreground">
-                    {isActive ? 'Waiting for input · just now' : track.meta}
+                  <span className="block font-mono text-xs text-[#B18A91]">
+                    {isActive ? 'In session · just now' : track.meta}
                   </span>
                 </span>
                 {track.kind === 'practice' && (
-                  <Dumbbell className="w-3.5 h-3.5 shrink-0 text-muted-foreground/70" />
+                  <Dumbbell className="w-3.5 h-3.5 shrink-0 text-[#C69BA5]/70" />
                 )}
               </button>
             );
           })}
 
           {filteredSaved.length === 0 && filteredTracks.length === 0 && (
-            <div className="px-2 py-4 font-ui text-xs text-muted-foreground">
+            <div className="px-2 py-4 font-mono text-xs text-[#B9A5AA]">
               {query.trim() ? 'No sessions match.' : 'No sessions yet.'}
             </div>
           )}
         </div>
 
-        {/* Background Agents Section — empty means empty (exact activity-dock.tsx lines 347-356) */}
-        <section className="border-t border-border px-3 pb-3 pt-2">
+        {/* Background Agents Section */}
+        <section className="border-t border-[#513A42] px-3 pb-2 pt-2.5">
           <button
             type="button"
             onClick={onOpenRubricExplainer}
-            className="flex w-full items-center gap-1.5 font-ui text-xs uppercase tracking-widest text-muted-foreground/70 hover:text-muted-foreground transition-colors"
+            className="flex w-full items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#B18A91] hover:text-[#F4EDEF] transition-colors"
             title="View 4-Pillar Evaluation Rubric"
           >
-            <Activity className="w-3 h-3" />
+            <Activity className="w-3.5 h-3.5 text-[#C69BA5]" />
             <span>Background agents</span>
           </button>
         </section>
 
-        {/* Settings Entry (exact sidebar.tsx lines 852-864) */}
+        {/* Settings Entry */}
         <div className="px-3 pb-3 pt-1">
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex items-center gap-1.5 rounded-md px-2 py-1.5 font-ui text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 font-mono text-xs uppercase tracking-wider text-[#D5BFC3] transition-colors hover:bg-[#5A333E] hover:text-[#F4EDEF]"
           >
-            <Settings className="w-3 h-3" />
+            <Settings className="w-3.5 h-3.5 text-[#C69BA5]" />
             <span>Settings</span>
           </button>
         </div>

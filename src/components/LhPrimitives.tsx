@@ -133,15 +133,15 @@ export const ThinkingBlock: React.FC<{
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div
-      className={`lh-card-enter my-2 w-full border-l-[6px] border-muted-foreground/30 py-1.5 pl-3.5 pr-4 font-ui text-xs ${
-        inCard ? '' : 'bg-card'
+      className={`lh-card-enter my-2 w-full rounded-r-lg border-l-[4px] border-[#754653] border-y border-r border-[#513A42] py-2 pl-3.5 pr-4 font-ui text-xs shadow-sm ${
+        inCard ? 'bg-[#241910]' : 'bg-[#302329]'
       }`}
     >
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-2 font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
+        className="flex w-full items-center justify-between gap-2 font-mono uppercase tracking-wider text-[#C69BA5] transition-colors hover:text-[#F4EDEF]"
       >
         <span className="flex items-center gap-2">
           {label}
@@ -149,10 +149,10 @@ export const ThinkingBlock: React.FC<{
             className={`w-3.5 h-3.5 shrink-0 transition-transform ${open ? 'rotate-180' : 'rotate-0'}`}
           />
         </span>
-        {metaRight && <span className="font-mono text-[11px] normal-case text-muted-foreground">{metaRight}</span>}
+        {metaRight && <span className="font-mono text-[11px] normal-case text-[#B18A91]">{metaRight}</span>}
       </button>
       {open && (
-        <span className="lh-prose mt-1.5 block whitespace-pre-wrap text-[15px] italic text-foreground/60">
+        <span className="lh-prose mt-2 block whitespace-pre-wrap font-sans-editorial text-[14.5px] italic text-[#E9DFDF]/90 leading-relaxed">
           {text ?? children}
         </span>
       )}
@@ -170,20 +170,20 @@ export const TopBar: React.FC<{
   children?: ReactNode;
   rightContent?: ReactNode;
 }> = ({ sidebarOpen = true, onToggleSidebar, title, children, rightContent }) => (
-  <header className="flex h-15 shrink-0 select-none items-center gap-3 border-b border-border bg-background px-4">
+  <header className="flex h-15 shrink-0 select-none items-center gap-3 border-b border-[#513A42] bg-[#241910]/95 backdrop-blur-md px-4">
     {!sidebarOpen && onToggleSidebar && (
       <button
         type="button"
         onClick={onToggleSidebar}
         aria-label="Open sidebar"
         title="Open sidebar (⌘B)"
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#D5BFC3] transition-colors hover:bg-[#3B2931] hover:text-[#F4EDEF]"
       >
-        <PanelLeftOpen className="w-4 h-4" />
+        <PanelLeftOpen className="w-4 h-4 text-[#C69BA5]" />
       </button>
     )}
     {title && (
-      <h1 className="font-title min-w-0 truncate text-2xl sm:text-3xl tracking-tight text-foreground">
+      <h1 className="font-editorial min-w-0 truncate text-2xl sm:text-3xl tracking-tight text-[#F4EDEF] font-bold">
         {title}
       </h1>
     )}

@@ -222,7 +222,7 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground font-sans">
+    <div className="min-h-screen w-full bg-[#241910] text-[#E9DFDF] font-sans-editorial selection:bg-[#754653]/40 selection:text-[#F4EDEF]">
       {currentView === 'landing' ? (
         <LandingView
           onStartDomain={handleStartDomainFromLanding}
@@ -239,8 +239,8 @@ export function App() {
           currentUser={currentUser}
         />
       ) : (
-        <div className="flex h-dvh w-full overflow-hidden bg-background text-foreground font-sans">
-          {/* Persistent Collapsible Left Sidebar for Workspace */}
+        <div className="flex h-dvh w-full overflow-hidden bg-[#241910] text-[#E9DFDF] font-sans-editorial">
+          {/* Persistent Collapsible Left Sidebar for Workspace (Oxblood: #482832) */}
           <Navbar
             open={sidebarOpen}
             onToggle={toggleSidebar}
@@ -265,7 +265,7 @@ export function App() {
           />
 
           {/* Main Content Area */}
-          <div className="relative min-w-0 flex-1 h-dvh overflow-hidden bg-background">
+          <div className="relative min-w-0 flex-1 h-dvh overflow-hidden bg-[#241910] texture-plum">
             {currentView === 'interview' && (
               <InterviewView
                 sidebarOpen={sidebarOpen}

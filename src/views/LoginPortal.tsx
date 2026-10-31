@@ -96,27 +96,27 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-background p-4 text-foreground">
-      <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-[#241910] p-4 text-[#E9DFDF] texture-plum font-sans-editorial">
+      <div className="w-full max-w-sm rounded-2xl border border-[#513A42] bg-[#44323A] p-6 shadow-2xl shadow-[#482832]/60">
         {/* Header */}
         <div className="mb-6 space-y-2">
             <div className="flex items-center gap-2">
               <LhMark className="w-8 h-8" iconClassName="w-4 h-4 text-[#C69BA5]" />
-              <span className="text-base font-bold tracking-tight text-foreground font-ui">
+              <span className="text-base font-bold tracking-tight text-[#F4EDEF] font-editorial">
                 Interview<span className="text-[#C69BA5]">IQ</span>
               </span>
             </div>
             <span className="font-mono text-[10px] uppercase tracking-wider text-[#C69BA5]">
               INTERVIEW HARNESS
             </span>
-          <h1 className="font-title text-2xl text-foreground font-editorial">Sign in to continue</h1>
-          <p className="font-prose text-sm text-[#D5BFC3]">
+          <h1 className="font-editorial text-2xl text-[#F4EDEF] font-bold">Sign in to continue</h1>
+          <p className="font-sans-editorial text-sm text-[#D5BFC3]">
             Local-first session history, 4-pillar rubrics, and knowledge graph.
           </p>
         </div>
 
         {/* Segmented Auth Switcher */}
-        <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg border border-border bg-background p-1 font-mono text-xs">
+        <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg border border-[#513A42] bg-[#302329] p-1 font-mono text-xs">
           <button
             type="button"
             onClick={() => {
@@ -125,8 +125,8 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
             }}
             className={`rounded-md py-1.5 transition-colors ${
               activeTab === 'google'
-                ? 'bg-accent text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-[#754653] text-[#F4EDEF] border border-[#C69BA5]/60 font-semibold'
+                : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
             }`}
           >
             GOOGLE
@@ -136,8 +136,8 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
             onClick={() => setActiveTab('phone')}
             className={`rounded-md py-1.5 transition-colors ${
               activeTab === 'phone'
-                ? 'bg-accent text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-[#754653] text-[#F4EDEF] border border-[#C69BA5]/60 font-semibold'
+                : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
             }`}
           >
             PHONE
@@ -147,46 +147,46 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
         {/* TAB 1: GOOGLE */}
         {activeTab === 'google' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between rounded-lg border border-border bg-background px-3.5 py-2.5">
+            <div className="flex items-center justify-between rounded-xl border border-[#513A42] bg-[#302329] px-3.5 py-2.5">
               <div className="min-w-0">
-                <div className="font-sans text-sm font-medium text-foreground truncate">
+                <div className="font-sans-editorial text-sm font-medium text-[#F4EDEF] truncate">
                   {googleName}
                 </div>
-                <div className="font-mono text-xs text-muted-foreground truncate">
+                <div className="font-mono text-xs text-[#B18A91] truncate">
                   {googleEmail}
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsCustomGoogle(!isCustomGoogle)}
-                className="font-mono text-xs text-muted-foreground hover:text-foreground underline"
+                className="font-mono text-xs text-[#C69BA5] hover:text-[#F4EDEF] underline"
               >
                 {isCustomGoogle ? 'Done' : 'Edit'}
               </button>
             </div>
 
             {isCustomGoogle && (
-              <div className="space-y-2.5 rounded-lg border border-border bg-background p-3">
+              <div className="space-y-2.5 rounded-xl border border-[#513A42] bg-[#302329] p-3">
                 <div>
-                  <label className="block font-mono text-xs uppercase text-muted-foreground mb-1">
+                  <label className="block font-mono text-xs uppercase text-[#C69BA5] mb-1">
                     Name
                   </label>
                   <input
                     type="text"
                     value={googleName}
                     onChange={(e) => setGoogleName(e.target.value)}
-                    className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-sans text-sm text-foreground"
+                    className="w-full rounded-lg border border-[#513A42] bg-[#241910] px-2.5 py-1.5 font-sans-editorial text-sm text-[#F4EDEF] outline-none focus:border-[#C69BA5]"
                   />
                 </div>
                 <div>
-                  <label className="block font-mono text-xs uppercase text-muted-foreground mb-1">
+                  <label className="block font-mono text-xs uppercase text-[#C69BA5] mb-1">
                     Email
                   </label>
                   <input
                     type="email"
                     value={googleEmail}
                     onChange={(e) => setGoogleEmail(e.target.value)}
-                    className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs text-foreground"
+                    className="w-full rounded-lg border border-[#513A42] bg-[#241910] px-2.5 py-1.5 font-mono text-xs text-[#F4EDEF] outline-none focus:border-[#C69BA5]"
                   />
                 </div>
               </div>
@@ -195,11 +195,11 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
             <button
               type="button"
               onClick={() => setLinkBoth(!linkBoth)}
-              className="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background/60 px-3 py-2 text-left font-mono text-xs text-muted-foreground hover:text-foreground"
+              className="flex w-full items-center gap-2.5 rounded-xl border border-[#513A42] bg-[#302329] px-3 py-2 text-left font-mono text-xs text-[#D5BFC3] hover:text-[#F4EDEF]"
             >
               <span
                 className={`flex h-4 w-4 items-center justify-center rounded border ${
-                  linkBoth ? 'border-foreground bg-foreground text-background' : 'border-border'
+                  linkBoth ? 'border-[#C69BA5] bg-[#754653] text-[#F4EDEF]' : 'border-[#513A42]'
                 }`}
               >
                 {linkBoth && <Check className="h-3 w-3" />}
@@ -211,11 +211,11 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
               type="button"
               onClick={handleGoogleLogin}
               disabled={isGoogleLoading}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary font-sans text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-[#C69BA5]/60 bg-[#754653] font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910] transition-all shadow-md shadow-[#482832]/50"
             >
               {isGoogleLoading ? (
                 <>
-                  <BrailleSpinner />
+                  <BrailleSpinner className="h-3 w-auto text-[#C69BA5]" />
                   <span>Signing in...</span>
                 </>
               ) : (
@@ -231,14 +231,14 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
             {phoneStep === 'input' ? (
               <form onSubmit={handleSendOtp} className="space-y-3">
                 <div>
-                  <label className="block font-mono text-xs uppercase text-muted-foreground mb-1">
+                  <label className="block font-mono text-xs uppercase text-[#C69BA5] mb-1">
                     Phone Number
                   </label>
                   <div className="flex gap-2">
                     <select
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="rounded-lg border border-border bg-background px-2.5 py-2 font-mono text-xs text-foreground"
+                      className="rounded-lg border border-[#513A42] bg-[#302329] px-2.5 py-2 font-mono text-xs text-[#F4EDEF]"
                     >
                       <option value="+1">+1 US</option>
                       <option value="+44">+44 UK</option>
@@ -251,7 +251,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       required
-                      className="flex-1 rounded-lg border border-border bg-background px-3 py-2 font-mono text-xs text-foreground"
+                      className="flex-1 rounded-lg border border-[#513A42] bg-[#241910] px-3 py-2 font-mono text-xs text-[#F4EDEF] outline-none focus:border-[#C69BA5]"
                     />
                   </div>
                 </div>
@@ -259,36 +259,36 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
                 <button
                   type="submit"
                   disabled={isPhoneLoading}
-                  className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary font-sans text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-[#C69BA5]/60 bg-[#754653] font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910] transition-all shadow-md shadow-[#482832]/50"
                 >
-                  {isPhoneLoading ? <BrailleSpinner /> : null}
+                  {isPhoneLoading ? <BrailleSpinner className="h-3 w-auto text-[#C69BA5]" /> : null}
                   <span>Send verification code →</span>
                 </button>
               </form>
             ) : (
               <form onSubmit={handleVerifyOtp} className="space-y-3">
-                <div className="rounded-lg border border-border bg-background p-3 text-center font-mono text-xs text-muted-foreground">
-                  Code sent to <span className="text-foreground">{countryCode} {phoneNumber}</span>
+                <div className="rounded-xl border border-[#513A42] bg-[#302329] p-3 text-center font-mono text-xs text-[#D5BFC3]">
+                  Code sent to <span className="text-[#F4EDEF] font-bold">{countryCode} {phoneNumber}</span>
                 </div>
                 <input
                   type="text"
                   maxLength={6}
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background py-2.5 text-center font-mono text-base tracking-[0.4em] text-foreground"
+                  className="w-full rounded-lg border border-[#513A42] bg-[#241910] py-2.5 text-center font-mono text-base tracking-[0.4em] text-[#F4EDEF] outline-none focus:border-[#C69BA5]"
                 />
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setPhoneStep('input')}
-                    className="w-1/3 rounded-lg border border-border bg-background py-2 font-mono text-xs text-muted-foreground hover:text-foreground"
+                    className="w-1/3 rounded-lg border border-[#513A42] bg-[#302329] py-2 font-mono text-xs text-[#D5BFC3] hover:text-[#F4EDEF]"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
                     disabled={isPhoneLoading}
-                    className="w-2/3 rounded-lg bg-primary py-2 font-sans text-sm font-medium text-primary-foreground hover:opacity-90"
+                    className="w-2/3 rounded-lg border border-[#C69BA5]/60 bg-[#754653] py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910]"
                   >
                     Verify
                   </button>
@@ -299,11 +299,11 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
         )}
 
         {/* Quick Guest Demo */}
-        <div className="mt-5 border-t border-border pt-4">
+        <div className="mt-5 border-t border-[#513A42] pt-4">
           <button
             type="button"
             onClick={handleQuickDemoLogin}
-            className="w-full rounded-lg border border-border bg-background py-2 font-mono text-xs text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            className="w-full rounded-lg border border-[#513A42] bg-[#302329] py-2 font-mono text-xs text-[#D5BFC3] hover:border-[#C69BA5] hover:text-[#F4EDEF] transition-colors"
           >
             1-Click Demo Session (Elena Rostova)
           </button>

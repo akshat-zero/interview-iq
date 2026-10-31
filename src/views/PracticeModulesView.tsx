@@ -37,7 +37,7 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
   };
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
+    <div className="flex h-dvh flex-col overflow-hidden bg-[#241910] text-[#E9DFDF] texture-plum font-sans-editorial">
       {/* LearnHarness TopBar */}
       <TopBar
         sidebarOpen={sidebarOpen}
@@ -48,7 +48,7 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
             <button
               type="button"
               onClick={handlePrintPdf}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#513A42] bg-[#3B2931] px-3 py-1.5 text-[#D5BFC3] hover:border-[#C69BA5] hover:text-[#F4EDEF] transition-colors"
             >
               <Printer className="h-3.5 w-3.5" />
               <span>Print PDF</span>
@@ -56,7 +56,7 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
             <button
               type="button"
               onClick={() => onLaunchInterviewForDomain(selectedDomainId)}
-              className="rounded-md bg-primary px-3 py-1 font-sans text-xs font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+              className="rounded-lg border border-[#C69BA5]/60 bg-[#754653] px-3.5 py-1.5 font-bold text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910] transition-all shadow-md shadow-[#482832]/50"
             >
               Start Interview →
             </button>
@@ -68,7 +68,7 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8 space-y-8 pb-20">
           {/* Domain Selector + Mode Switcher Bar */}
-          <div className="no-print flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+          <div className="no-print flex flex-wrap items-center justify-between gap-3 border-b border-[#513A42] pb-4">
             <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
               {DOMAINS.map(domain => {
                 const isSelected = domain.id === selectedDomainId;
@@ -80,10 +80,10 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
                       setSelectedDomainId(domain.id);
                       setRevealedDrillIds({});
                     }}
-                    className={`rounded-md border px-2.5 py-1 transition-colors ${
+                    className={`rounded-lg border px-3 py-1 transition-colors ${
                       isSelected
-                        ? 'border-foreground/60 bg-accent text-foreground'
-                        : 'border-border bg-card text-muted-foreground hover:text-foreground'
+                        ? 'border-[#C69BA5] bg-[#754653]/40 text-[#F4EDEF] font-semibold'
+                        : 'border-[#513A42] bg-[#302329] text-[#D5BFC3] hover:border-[#754653] hover:text-[#F4EDEF]'
                     }`}
                   >
                     {domain.shortTitle}
@@ -93,14 +93,14 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
             </div>
 
             {/* Segmented Tab Bar */}
-            <div className="inline-flex rounded-md border border-border bg-card p-0.5 font-mono text-xs">
+            <div className="inline-flex rounded-lg border border-[#513A42] bg-[#302329] p-0.5 font-mono text-xs">
               <button
                 type="button"
                 onClick={() => setActiveTab('drills')}
-                className={`rounded px-2.5 py-1 transition-colors ${
+                className={`rounded-md px-3 py-1 transition-colors ${
                   activeTab === 'drills'
-                    ? 'bg-accent text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-[#754653] text-[#F4EDEF] border border-[#C69BA5]/60 font-semibold'
+                    : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
                 }`}
               >
                 Drills ({activeModule.practiceQuestions.length})
@@ -108,10 +108,10 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('frameworks')}
-                className={`rounded px-2.5 py-1 transition-colors ${
+                className={`rounded-md px-3 py-1 transition-colors ${
                   activeTab === 'frameworks'
-                    ? 'bg-accent text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-[#754653] text-[#F4EDEF] border border-[#C69BA5]/60 font-semibold'
+                    : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
                 }`}
               >
                 Frameworks ({activeModule.frameworks.length})
@@ -119,10 +119,10 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('cheatsheet')}
-                className={`rounded px-2.5 py-1 transition-colors ${
+                className={`rounded-md px-3 py-1 transition-colors ${
                   activeTab === 'cheatsheet'
-                    ? 'bg-accent text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-[#754653] text-[#F4EDEF] border border-[#C69BA5]/60 font-semibold'
+                    : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
                 }`}
               >
                 Cheat Sheet ({activeModule.cheatSheet.length})
@@ -132,13 +132,13 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
 
           {/* Module Overview */}
           <div className="space-y-2">
-            <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            <div className="font-mono text-xs uppercase tracking-widest text-[#C69BA5]">
               PRACTICE MODULE · {activeDomainInfo.badge.toUpperCase()} · ~{activeModule.estimatedMinutes} MIN
             </div>
-            <p className="lh-prose text-muted-foreground">{activeModule.overview}</p>
+            <p className="font-sans-editorial text-[#D5BFC3] leading-relaxed text-base">{activeModule.overview}</p>
           </div>
 
-          {/* TAB 1: DRILLS (with LearnHarness PracticeDock style scratchpad) */}
+          {/* TAB 1: DRILLS */}
           {activeTab === 'drills' && (
             <div className="space-y-6">
               {activeModule.practiceQuestions.map((drill, index) => {
@@ -147,47 +147,47 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
                 return (
                   <div
                     key={drill.id}
-                    className="rounded-2xl border border-border bg-card p-5 space-y-4"
+                    className="rounded-2xl border border-[#513A42] bg-[#302329] p-6 space-y-4 shadow-md"
                   >
-                    <div className="flex items-baseline justify-between gap-3">
-                      <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                    <div className="flex items-baseline justify-between gap-3 border-b border-[#513A42]/50 pb-3">
+                      <span className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] font-semibold">
                         DRILL {index + 1} · {drill.drillType}
                       </span>
                       <button
                         type="button"
                         onClick={() => toggleRevealDrill(drill.id)}
-                        className="no-print inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 font-mono text-xs text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                        className="no-print inline-flex items-center gap-1.5 rounded-lg border border-[#513A42] bg-[#241910] px-3 py-1 font-mono text-xs text-[#D5BFC3] hover:border-[#C69BA5] hover:text-[#F4EDEF] transition-colors"
                       >
-                        {isRevealed ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                        {isRevealed ? <EyeOff className="h-3 w-3 text-[#C69BA5]" /> : <Eye className="h-3 w-3 text-[#C69BA5]" />}
                         <span>{isRevealed ? 'Hide solution' : 'Reveal solution'}</span>
                       </button>
                     </div>
 
-                    <div className="lh-prose">
-                      <h3 className="font-sans text-lg font-medium text-foreground mb-1">
+                    <div>
+                      <h3 className="font-editorial text-xl font-bold text-[#F4EDEF] mb-1.5">
                         {drill.title}
                       </h3>
-                      <p>{drill.prompt}</p>
+                      <p className="font-sans-editorial text-sm sm:text-base text-[#D5BFC3] leading-relaxed">{drill.prompt}</p>
                     </div>
 
-                    <div className="rounded-lg border border-border bg-background/50 px-3.5 py-2.5 text-sm font-prose text-muted-foreground">
-                      <span className="font-mono text-xs uppercase tracking-wider text-foreground mr-2">
+                    <div className="rounded-xl border border-[#513A42] bg-[#241910]/70 px-4 py-3 text-sm font-sans-editorial text-[#D5BFC3]">
+                      <span className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mr-2 font-semibold">
                         Focus Concept:
                       </span>
                       {drill.conceptExplanation}
                     </div>
 
-                    {/* Interactive Practice Scratchpad (like LearnHarness PracticeDock) */}
-                    <div className="no-print rounded-[10px] border border-border/70 bg-background/60 px-3 py-2">
-                      <div className="mb-1 flex items-center justify-between">
-                        <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                    {/* Interactive Practice Scratchpad */}
+                    <div className="no-print rounded-xl border border-[#513A42] bg-[#241910] p-3 shadow-inner">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="font-mono text-xs uppercase tracking-wider text-[#C69BA5]">
                           Your thinking (scratchpad)
                         </span>
                         {note.trim() && !isRevealed && (
                           <button
                             type="button"
                             onClick={() => toggleRevealDrill(drill.id)}
-                            className="font-mono text-xs text-foreground underline"
+                            className="font-mono text-xs text-[#F4EDEF] underline hover:text-[#C6A0A7]"
                           >
                             Compare with model answer →
                           </button>
@@ -200,45 +200,46 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
                         }
                         rows={3}
                         placeholder="Draft your response structure or key points before revealing the solution..."
-                        className="lh-input w-full resize-y bg-transparent"
+                        className="w-full resize-y bg-transparent font-sans-editorial text-sm text-[#F4EDEF] outline-none placeholder:text-[#B9A5AA]/60 leading-relaxed"
                       />
                     </div>
 
                     {/* Revealed Solution */}
                     {isRevealed && (
-                      <div className="space-y-4 border-t border-border pt-4">
-                        <div className="rounded-lg border border-border bg-background p-4 space-y-2">
-                          <div className="font-mono text-xs uppercase tracking-wider text-foreground">
-                            Exemplar Answer Breakdown
+                      <div className="space-y-4 border-t border-[#513A42] pt-4">
+                        <div className="rounded-xl border border-[#754653]/60 bg-[#3B2931] p-5 space-y-2 shadow-md">
+                          <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] font-semibold flex items-center gap-1.5">
+                            <span>✦</span>
+                            <span>Exemplar Answer Breakdown</span>
                           </div>
-                          <div className="font-prose text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">
+                          <div className="font-sans-editorial text-sm text-[#F4EDEF] whitespace-pre-wrap leading-relaxed">
                             {drill.modelAnswer}
                           </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="rounded-lg border border-border bg-background/60 p-3.5">
-                            <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mb-1.5">
+                          <div className="rounded-xl border border-[#513A42] bg-[#241910] p-4 shadow-inner">
+                            <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mb-2 font-semibold">
                               + Key Takeaways
                             </div>
-                            <ul className="space-y-1 text-xs font-prose text-muted-foreground">
+                            <ul className="space-y-1.5 text-xs font-sans-editorial text-[#D5BFC3]">
                               {drill.keyTakeaways.map((point, i) => (
-                                <li key={i} className="flex items-start gap-1.5">
-                                  <span className="font-mono">·</span>
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="font-mono text-[#C69BA5]">✓</span>
                                   <span>{point}</span>
                                 </li>
                               ))}
                             </ul>
                           </div>
 
-                          <div className="rounded-lg border border-border bg-background/60 p-3.5">
-                            <div className="font-mono text-xs uppercase tracking-wider text-[#B18A91] mb-1.5">
+                          <div className="rounded-xl border border-[#513A42] bg-[#241910] p-4 shadow-inner">
+                            <div className="font-mono text-xs uppercase tracking-wider text-[#B18A91] mb-2 font-semibold">
                               - Common Pitfalls
                             </div>
-                            <ul className="space-y-1 text-xs font-prose text-muted-foreground">
+                            <ul className="space-y-1.5 text-xs font-sans-editorial text-[#D5BFC3]">
                               {drill.commonPitfalls.map((pitfall, i) => (
-                                <li key={i} className="flex items-start gap-1.5">
-                                  <span className="font-mono">·</span>
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="font-mono text-[#B18A91]">–</span>
                                   <span>{pitfall}</span>
                                 </li>
                               ))}
@@ -259,17 +260,17 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
               {activeModule.frameworks.map((fw, idx) => (
                 <div
                   key={idx}
-                  className="rounded-xl border border-border bg-card p-5 space-y-3"
+                  className="rounded-2xl border border-[#513A42] bg-[#302329] p-6 space-y-3 shadow-md"
                 >
-                  <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5]">
                     FRAMEWORK 0{idx + 1}
                   </div>
-                  <h4 className="font-sans text-lg font-medium text-foreground">{fw.name}</h4>
-                  <p className="font-prose text-sm text-muted-foreground">{fw.description}</p>
-                  <ul className="space-y-1.5 pt-1 font-prose text-sm text-foreground/90">
+                  <h4 className="font-editorial text-2xl font-bold text-[#F4EDEF]">{fw.name}</h4>
+                  <p className="font-sans-editorial text-sm text-[#D5BFC3] leading-relaxed">{fw.description}</p>
+                  <ul className="space-y-2 pt-2 font-sans-editorial text-sm text-[#E9DFDF]">
                     {fw.steps.map((st, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="font-mono text-xs text-muted-foreground">{i + 1}.</span>
+                      <li key={i} className="flex items-start gap-2.5 rounded-lg border border-[#513A42] bg-[#241910] p-3">
+                        <span className="font-mono text-xs text-[#C69BA5] font-semibold">{i + 1}.</span>
                         <span>{st}</span>
                       </li>
                     ))}
@@ -285,16 +286,18 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
               {activeModule.cheatSheet.map((item, idx) => (
                 <div
                   key={idx}
-                  className="rounded-xl border border-border bg-card p-4 space-y-2"
+                  className="rounded-2xl border border-[#513A42] bg-[#302329] p-5 space-y-2.5 shadow-md flex flex-col justify-between"
                 >
-                  <div className="font-mono text-xs uppercase tracking-wider text-foreground">
-                    {item.term}
+                  <div>
+                    <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] font-semibold">
+                      {item.term}
+                    </div>
+                    <p className="font-sans-editorial text-sm text-[#D5BFC3] leading-relaxed mt-1">
+                      {item.definition}
+                    </p>
                   </div>
-                  <p className="font-prose text-sm text-muted-foreground leading-relaxed">
-                    {item.definition}
-                  </p>
-                  <div className="border-t border-border/60 pt-2 font-prose text-xs text-foreground/80">
-                    <span className="font-mono uppercase text-muted-foreground mr-1">Tip:</span>
+                  <div className="border-t border-[#513A42] pt-2.5 font-sans-editorial text-xs text-[#E9DFDF]">
+                    <span className="font-mono uppercase text-[#B18A91] mr-1.5 font-semibold">Tip:</span>
                     {item.practicalTip}
                   </div>
                 </div>
@@ -303,18 +306,18 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
           )}
 
           {/* Footer Navigation */}
-          <div className="no-print flex items-center justify-between border-t border-border pt-6">
+          <div className="no-print flex items-center justify-between border-t border-[#513A42] pt-6">
             <button
               type="button"
               onClick={onBackToHome}
-              className="rounded-md border border-border bg-card px-3.5 py-2 font-mono text-xs text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              className="rounded-lg border border-[#513A42] bg-[#3B2931] px-4 py-2 font-mono text-xs text-[#D5BFC3] hover:border-[#C69BA5] hover:text-[#F4EDEF] transition-colors"
             >
               ← Back to Home
             </button>
             <button
               type="button"
               onClick={() => onLaunchInterviewForDomain(selectedDomainId)}
-              className="rounded-md bg-primary px-4 py-2 font-sans text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+              className="rounded-lg border border-[#C69BA5]/60 bg-[#754653] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910] transition-all shadow-md shadow-[#482832]/50"
             >
               Start {activeDomainInfo.shortTitle} Session →
             </button>
