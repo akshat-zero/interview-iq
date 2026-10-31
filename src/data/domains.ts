@@ -10,12 +10,12 @@ export const DOMAINS: DomainInfo[] = [
     description: 'Master technical discussions from distributed systems and low-latency architecture to clean code refactoring and incident triage.',
     iconName: 'Code2',
     themeColor: {
-      primary: '#754653',
-      secondary: '#B18A91',
-      border: 'border-[#513A42]',
-      bgGlow: 'bg-[#482832]/40',
-      textAccent: 'text-[#C69BA5]',
-      gradient: 'from-[#754653] to-[#B18A91]',
+      primary: '#A55534',
+      secondary: '#C68C6E',
+      border: 'border-[#3A1D19]',
+      bgGlow: 'bg-[#3A1D19]/50',
+      textAccent: 'text-[#C68C6E]',
+      gradient: 'from-[#A55534] to-[#C68C6E]',
     },
     roles: [
       {
@@ -53,12 +53,12 @@ export const DOMAINS: DomainInfo[] = [
     description: 'Elevate your executive presence, cross-functional stakeholder alignment, high-stakes trade-offs, and operational change management.',
     iconName: 'Briefcase',
     themeColor: {
-      primary: '#482832',
-      secondary: '#C6A0A7',
-      border: 'border-[#513A42]',
-      bgGlow: 'bg-[#3B2931]/40',
-      textAccent: 'text-[#E9DFDF]',
-      gradient: 'from-[#482832] to-[#754653]',
+      primary: '#3A1D19',
+      secondary: '#A55534',
+      border: 'border-[#3A1D19]',
+      bgGlow: 'bg-[#3A1D19]/40',
+      textAccent: 'text-[#F5F1EC]',
+      gradient: 'from-[#3A1D19] to-[#A55534]',
     },
     roles: [
       {
@@ -96,12 +96,12 @@ export const DOMAINS: DomainInfo[] = [
     description: 'Refine your audition repertoire presentation, vocal health regimen, character embodiment, and collaboration with directors and conductors.',
     iconName: 'Mic2',
     themeColor: {
-      primary: '#B18A91',
-      secondary: '#C69BA5',
-      border: 'border-[#513A42]',
-      bgGlow: 'bg-[#754653]/30',
-      textAccent: 'text-[#F4EDEF]',
-      gradient: 'from-[#754653] to-[#C69BA5]',
+      primary: '#C68C6E',
+      secondary: '#EEE9E3',
+      border: 'border-[#3A1D19]',
+      bgGlow: 'bg-[#A55534]/20',
+      textAccent: 'text-[#EEE9E3]',
+      gradient: 'from-[#C68C6E] to-[#EEE9E3]',
     },
     roles: [
       {
@@ -139,12 +139,12 @@ export const DOMAINS: DomainInfo[] = [
     description: 'Nail product design questions, metric root-cause analysis, and executive roadmapping.',
     iconName: 'Sparkles',
     themeColor: {
-      primary: '#8a5362',
-      secondary: '#D5BFC3',
-      border: 'border-[#513A42]',
-      bgGlow: 'bg-[#44323A]/40',
-      textAccent: 'text-[#C6A0A7]',
-      gradient: 'from-[#482832] to-[#B18A91]',
+      primary: '#A55534',
+      secondary: '#3A1D19',
+      border: 'border-[#3A1D19]',
+      bgGlow: 'bg-[#3A1D19]/40',
+      textAccent: 'text-[#C68C6E]',
+      gradient: 'from-[#A55534] to-[#3A1D19]',
     },
     roles: [
       {

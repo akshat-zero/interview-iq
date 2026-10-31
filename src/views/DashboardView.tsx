@@ -192,7 +192,7 @@ Questions Completed: ${session.evaluations.length}`;
               onClick={handleCopySummary}
               className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             >
-              {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? <Check className="h-3.5 w-3.5 text-[#C68C6E]" /> : <Copy className="h-3.5 w-3.5" />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
             <button
@@ -246,7 +246,7 @@ Questions Completed: ${session.evaluations.length}`;
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               <div className="rounded-lg border border-border bg-background/60 p-4">
-                <div className="font-mono text-xs uppercase tracking-wider text-green-500 mb-2">
+                <div className="font-mono text-xs uppercase tracking-wider text-[#C68C6E] mb-2">
                   + Key Strengths
                 </div>
                 <ul className="space-y-1.5 text-sm font-prose text-foreground/90">
@@ -260,7 +260,7 @@ Questions Completed: ${session.evaluations.length}`;
               </div>
 
               <div className="rounded-lg border border-border bg-background/60 p-4">
-                <div className="font-mono text-xs uppercase tracking-wider text-amber-400 mb-2">
+                <div className="font-mono text-xs uppercase tracking-wider text-[#A55534] mb-2">
                   - Priority Focus Areas
                 </div>
                 <ul className="space-y-1.5 text-sm font-prose text-foreground/90">

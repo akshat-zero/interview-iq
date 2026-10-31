@@ -8,42 +8,54 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#141414',
-        foreground: '#e6e6e6',
+        // Warm Desert Editorial core palette
+        obsidian: '#0C0F14',
+        'burnt-umber': '#A55534',
+        terracotta: '#C68C6E',
+        oxblood: '#3A1D19',
+        paper: '#EEE9E3',
+        'warm-ivory': '#F5F1EC',
+
+        // Semantic bindings
+        background: '#0C0F14',
+        foreground: '#F5F1EC',
         card: {
-          DEFAULT: '#1c1c1c',
-          foreground: '#e6e6e6',
+          DEFAULT: '#12161F',
+          foreground: '#F5F1EC',
+          paper: '#EEE9E3',
+          'paper-foreground': '#0C0F14',
         },
         popover: {
-          DEFAULT: '#1c1c1c',
-          foreground: '#e6e6e6',
+          DEFAULT: '#12161F',
+          foreground: '#F5F1EC',
         },
         primary: {
-          DEFAULT: '#e6e6e6',
-          foreground: '#141414',
+          DEFAULT: '#A55534',
+          foreground: '#F5F1EC',
         },
         secondary: {
-          DEFAULT: '#1c1c1c',
-          foreground: '#e6e6e6',
+          DEFAULT: '#3A1D19',
+          foreground: '#F5F1EC',
         },
         muted: {
-          DEFAULT: '#1c1c1c',
-          foreground: '#8d8d8d',
+          DEFAULT: '#171B24',
+          foreground: '#C68C6E',
         },
         accent: {
-          DEFAULT: '#2a2a2a',
-          foreground: '#e6e6e6',
+          DEFAULT: '#241A18',
+          foreground: '#F5F1EC',
         },
-        border: '#434343',
-        input: '#434343',
-        ring: '#8d8d8d',
+        border: '#281E1C',
+        input: '#281E1C',
+        ring: '#A55534',
       },
       fontFamily: {
         ui: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-        prose: ['"Source Sans 3"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        sans: ['"Source Sans 3"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        title: ['"lh-cmu"', 'Georgia', 'serif'],
+        prose: ['Inter', '"Source Sans 3"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        title: ['Archivo', '"Abril Fatface"', '"lh-cmu"', 'Georgia', 'serif'],
+        editorial: ['Archivo', '"Abril Fatface"', '"lh-cmu"', 'Georgia', 'serif'],
       },
       fontSize: {
         xs: ['11px', { lineHeight: '1.4' }],
@@ -55,7 +67,7 @@ export default {
         '3xl': ['32px', { lineHeight: '1.25' }],
       },
       spacing: {
-        15: '3.75rem', // 60px TopBar height
+        15: '3.75rem',
       },
     },
   },

@@ -218,7 +218,7 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="rounded-lg border border-border bg-background/60 p-3.5">
-                            <div className="font-mono text-xs uppercase tracking-wider text-green-500 mb-1.5">
+                            <div className="font-mono text-xs uppercase tracking-wider text-[#C68C6E] mb-1.5">
                               + Key Takeaways
                             </div>
                             <ul className="space-y-1 text-xs font-prose text-muted-foreground">
@@ -232,7 +232,7 @@ export const PracticeModulesView: React.FC<PracticeModulesViewProps> = ({
                           </div>
 
                           <div className="rounded-lg border border-border bg-background/60 p-3.5">
-                            <div className="font-mono text-xs uppercase tracking-wider text-red-400 mb-1.5">
+                            <div className="font-mono text-xs uppercase tracking-wider text-[#A55534] mb-1.5">
                               - Common Pitfalls
                             </div>
                             <ul className="space-y-1 text-xs font-prose text-muted-foreground">

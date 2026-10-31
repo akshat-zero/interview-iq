@@ -376,10 +376,10 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
                   <span
                     className={`rounded px-1.5 py-0.5 font-mono text-xs uppercase tracking-wider ${
                       ev.overallScore >= 80
-                        ? 'bg-green-500/15 text-green-500'
+                        ? 'bg-[#A55534]/15 text-[#C68C6E] border border-[#A55534]/30'
                         : ev.overallScore >= 60
-                        ? 'bg-amber-500/15 text-amber-400'
-                        : 'bg-red-500/15 text-red-500'
+                        ? 'bg-[#3A1D19]/40 text-[#EEE9E3] border border-[#A55534]/20'
+                        : 'bg-[#3A1D19]/60 text-[#C68C6E]/80 border border-[#3A1D19]'
                     }`}
                   >
                     {ev.grade} · {ev.overallScore}%
