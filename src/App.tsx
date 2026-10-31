@@ -10,7 +10,6 @@ import {
   UserProfile
 } from './types/interview';
 import { Navbar } from './components/Navbar';
-import { Footer } from './components/Footer';
 import { LoginPortal } from './views/LoginPortal';
 import { LandingView } from './views/LandingView';
 import { InterviewView } from './views/InterviewView';
@@ -27,12 +26,12 @@ const SIDEBAR_STORAGE_KEY = 'lh:sidebar-open';
 
 const DEFAULT_USER: UserProfile = {
   id: 'usr_local_default',
-  name: 'Local Learner',
-  email: 'learner@learnharness.local',
-  avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=learnharness&backgroundColor=1c1c1c',
+  name: 'Candidate',
+  email: 'candidate@interviewiq.local',
+  avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=interviewiq&backgroundColor=1c1c1c',
   primaryProvider: 'google',
   isGoogleLinked: true,
-  googleEmail: 'learner@learnharness.local',
+  googleEmail: 'candidate@interviewiq.local',
   isPhoneLinked: false,
   createdAt: new Date().toISOString()
 };
@@ -223,89 +222,90 @@ export function App() {
   }
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-background text-foreground font-sans">
-      {/* Persistent Collapsible Left Sidebar (LearnHarness AppShell) */}
-      <Navbar
-        open={sidebarOpen}
-        onToggle={toggleSidebar}
-        onOpenDomainSelector={() => {
-          setModalInitialDomain(activeDomain.id);
-          setIsDomainModalOpen(true);
-        }}
-        onOpenRubricExplainer={() => setIsRubricModalOpen(true)}
-        onOpenHistory={() => setIsHistoryModalOpen(true)}
-        onOpenProfile={() => setIsProfileModalOpen(true)}
-        onOpenStudy={() => setCurrentView('study')}
-        onNavigateHome={() => setCurrentView('landing')}
-        onQuickStartRole={handleStartInterview}
-        onSelectSession={handleSelectHistorySession}
-        savedSessions={savedSessions}
-        activeDomainId={activeDomain.id}
-        activeRoleId={activeRoleId}
-        currentSessionId={currentSession?.id}
-        historyCount={savedSessions.length}
-        currentView={currentView}
-        currentUser={currentUser}
-      />
-
-      {/* Main Content Area */}
-      <div className="relative min-w-0 flex-1 h-dvh overflow-hidden bg-background">
-        {currentView === 'landing' && (
-          <LandingView
-            sidebarOpen={sidebarOpen}
-            onToggleSidebar={toggleSidebar}
-            onStartDomain={handleStartDomainFromLanding}
-            onQuickStartInterview={handleStartInterview}
-            onOpenSelector={() => {
+    <div className="min-h-screen w-full bg-background text-foreground font-sans">
+      {currentView === 'landing' ? (
+        <LandingView
+          onStartDomain={handleStartDomainFromLanding}
+          onQuickStartInterview={handleStartInterview}
+          onOpenSelector={() => {
+            setModalInitialDomain(activeDomain.id);
+            setIsDomainModalOpen(true);
+          }}
+          onOpenRubric={() => setIsRubricModalOpen(true)}
+          onOpenStudy={() => setCurrentView('study')}
+          onOpenHistory={() => setIsHistoryModalOpen(true)}
+          onOpenProfile={() => setIsProfileModalOpen(true)}
+          savedSessions={savedSessions}
+          currentUser={currentUser}
+        />
+      ) : (
+        <div className="flex h-dvh w-full overflow-hidden bg-background text-foreground font-sans">
+          {/* Persistent Collapsible Left Sidebar for Workspace */}
+          <Navbar
+            open={sidebarOpen}
+            onToggle={toggleSidebar}
+            onOpenDomainSelector={() => {
               setModalInitialDomain(activeDomain.id);
               setIsDomainModalOpen(true);
             }}
-            onOpenRubric={() => setIsRubricModalOpen(true)}
+            onOpenRubricExplainer={() => setIsRubricModalOpen(true)}
+            onOpenHistory={() => setIsHistoryModalOpen(true)}
+            onOpenProfile={() => setIsProfileModalOpen(true)}
             onOpenStudy={() => setCurrentView('study')}
+            onNavigateHome={() => setCurrentView('landing')}
+            onQuickStartRole={handleStartInterview}
+            onSelectSession={handleSelectHistorySession}
             savedSessions={savedSessions}
+            activeDomainId={activeDomain.id}
+            activeRoleId={activeRoleId}
+            currentSessionId={currentSession?.id}
+            historyCount={savedSessions.length}
+            currentView={currentView}
+            currentUser={currentUser}
           />
-        )}
 
-        {currentView === 'interview' && (
-          <InterviewView
-            sidebarOpen={sidebarOpen}
-            onToggleSidebar={toggleSidebar}
-            domain={activeDomain}
-            roleId={activeRoleId}
-            difficulty={activeDifficulty}
-            questions={activeQuestions}
-            onFinishInterview={handleFinishInterview}
-            onExitToHome={() => setCurrentView('landing')}
-          />
-        )}
+          {/* Main Content Area */}
+          <div className="relative min-w-0 flex-1 h-dvh overflow-hidden bg-background">
+            {currentView === 'interview' && (
+              <InterviewView
+                sidebarOpen={sidebarOpen}
+                onToggleSidebar={toggleSidebar}
+                domain={activeDomain}
+                roleId={activeRoleId}
+                difficulty={activeDifficulty}
+                questions={activeQuestions}
+                onFinishInterview={handleFinishInterview}
+                onExitToHome={() => setCurrentView('landing')}
+              />
+            )}
 
-        {currentView === 'dashboard' && currentSession && (
-          <DashboardView
-            sidebarOpen={sidebarOpen}
-            onToggleSidebar={toggleSidebar}
-            session={currentSession}
-            onStartNewSession={() => {
-              setModalInitialDomain(currentSession.domainId);
-              setIsDomainModalOpen(true);
-            }}
-            onExitHome={() => setCurrentView('landing')}
-          />
-        )}
+            {currentView === 'dashboard' && currentSession && (
+              <DashboardView
+                sidebarOpen={sidebarOpen}
+                onToggleSidebar={toggleSidebar}
+                session={currentSession}
+                onStartNewSession={() => {
+                  setModalInitialDomain(currentSession.domainId);
+                  setIsDomainModalOpen(true);
+                }}
+                onExitHome={() => setCurrentView('landing')}
+              />
+            )}
 
-        {currentView === 'study' && (
-          <PracticeModulesView
-            sidebarOpen={sidebarOpen}
-            onToggleSidebar={toggleSidebar}
-            onBackToHome={() => setCurrentView('landing')}
-            onLaunchInterviewForDomain={(domainId) => {
-              const defaultRoleId = DOMAINS.find(d => d.id === domainId)?.roles[0].id || '';
-              handleStartInterview(domainId, defaultRoleId, 'senior', 3);
-            }}
-          />
-        )}
-      </div>
-
-      <Footer />
+            {currentView === 'study' && (
+              <PracticeModulesView
+                sidebarOpen={sidebarOpen}
+                onToggleSidebar={toggleSidebar}
+                onBackToHome={() => setCurrentView('landing')}
+                onLaunchInterviewForDomain={(domainId) => {
+                  const defaultRoleId = DOMAINS.find(d => d.id === domainId)?.roles[0].id || '';
+                  handleStartInterview(domainId, defaultRoleId, 'senior', 3);
+                }}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <DomainSelectorModal

@@ -121,16 +121,24 @@ export const Navbar: React.FC<NavbarProps> = ({
       aria-hidden={!open}
     >
       <div className="flex h-dvh w-72 flex-col border-r border-border bg-background select-none">
-        {/* Top Wordmark Band (lh-mark + close icon) */}
-        <div className="flex items-center justify-between px-4 py-3">
+        {/* Top Wordmark Band (InterviewIQ mark + title + close icon) */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
           <button
             type="button"
             onClick={onNavigateHome}
-            aria-label="Home"
-            title="Home"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-foreground"
+            aria-label="InterviewIQ Home"
+            title="InterviewIQ Home"
+            className="flex items-center gap-2.5 transition-opacity hover:opacity-85 text-left"
           >
-            <LhMark className="w-6 h-6" />
+            <LhMark className="w-8 h-8" iconClassName="w-4 h-4 text-[#C69BA5]" />
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-bold tracking-tight text-foreground">
+                  Interview<span className="text-[#C69BA5]">IQ</span>
+                </span>
+                <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-accent text-muted-foreground uppercase">MVP</span>
+              </div>
+            </div>
           </button>
 
           <button
@@ -138,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onToggle}
             aria-label="Close sidebar"
             title="Close sidebar (⌘B)"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <PanelLeftClose className="w-4 h-4" />
           </button>

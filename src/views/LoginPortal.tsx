@@ -82,12 +82,12 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
     const user: UserProfile = {
       id: 'usr_demo_882',
       name: 'Elena Rostova',
-      email: 'elena.rostova@learnharness.io',
+      email: 'elena.rostova@interviewiq.io',
       phone: '+1 415-555-0199',
       avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=elena&backgroundColor=1c1c1c',
       primaryProvider: 'google',
       isGoogleLinked: true,
-      googleEmail: 'elena.rostova@learnharness.io',
+      googleEmail: 'elena.rostova@interviewiq.io',
       isPhoneLinked: true,
       phoneNumber: '+1 415-555-0199',
       createdAt: new Date().toISOString()
@@ -100,12 +100,15 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
       <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl">
         {/* Header */}
         <div className="mb-6 space-y-2">
-          <div className="flex items-center justify-between">
-            <LhMark className="text-lg" />
-            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <LhMark className="w-8 h-8" iconClassName="w-4 h-4 text-[#C69BA5]" />
+              <span className="text-base font-bold tracking-tight text-foreground">
+                Interview<span className="text-[#C69BA5]">IQ</span>
+              </span>
+            </div>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               INTERVIEW HARNESS
             </span>
-          </div>
           <h1 className="font-title text-2xl text-foreground">Sign in to continue</h1>
           <p className="font-prose text-sm text-muted-foreground">
             Local-first session history, 4-pillar rubrics, and knowledge graph.
