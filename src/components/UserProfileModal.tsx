@@ -127,7 +127,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
 
             {user.isGoogleLinked ? (
-              <span className="rounded bg-[#A55534]/15 px-2 py-0.5 font-ui text-[11px] text-[#C68C6E] border border-[#A55534]/30">
+              <span className="rounded bg-[#754653]/25 px-2 py-0.5 font-ui text-[11px] text-[#C69BA5] border border-[#754653]/40">
                 linked
               </span>
             ) : isLinkingGoogle ? (
@@ -167,7 +167,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
 
             {user.isPhoneLinked ? (
-              <span className="rounded bg-[#A55534]/15 px-2 py-0.5 font-ui text-[11px] text-[#C68C6E] border border-[#A55534]/30">
+              <span className="rounded bg-[#754653]/25 px-2 py-0.5 font-ui text-[11px] text-[#C69BA5] border border-[#754653]/40">
                 linked
               </span>
             ) : isLinkingPhone ? (

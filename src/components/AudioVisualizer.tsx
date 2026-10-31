@@ -55,7 +55,7 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       {activeHeights.map((height, idx) => (
         <div
           key={idx}
-          className="w-[2px] rounded-full bg-gradient-to-t from-[#A55534] to-[#C68C6E] transition-all duration-75"
+          className="w-[2px] rounded-full bg-gradient-to-t from-[#754653] to-[#C69BA5] transition-all duration-75"
           style={{
             height: `${isRecording ? height : 2}px`,
             opacity: isRecording ? (height > 6 ? 0.9 : 0.45) : 0.25,

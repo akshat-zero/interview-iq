@@ -101,16 +101,16 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
         {/* Header */}
         <div className="mb-6 space-y-2">
             <div className="flex items-center gap-2">
-              <LhMark className="w-8 h-8" iconClassName="w-4 h-4 text-[#C68C6E]" />
+              <LhMark className="w-8 h-8" iconClassName="w-4 h-4 text-[#C69BA5]" />
               <span className="text-base font-bold tracking-tight text-foreground font-ui">
-                Interview<span className="text-[#C68C6E]">IQ</span>
+                Interview<span className="text-[#C69BA5]">IQ</span>
               </span>
             </div>
-            <span className="font-mono text-[10px] uppercase tracking-wider text-[#C68C6E]">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-[#C69BA5]">
               INTERVIEW HARNESS
             </span>
           <h1 className="font-title text-2xl text-foreground font-editorial">Sign in to continue</h1>
-          <p className="font-prose text-sm text-[#EEE9E3]/70">
+          <p className="font-prose text-sm text-[#D5BFC3]">
             Local-first session history, 4-pillar rubrics, and knowledge graph.
           </p>
         </div>

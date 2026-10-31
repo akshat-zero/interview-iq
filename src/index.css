@@ -20,29 +20,43 @@
 :root {
   color-scheme: dark;
   --radius: 8px;
-  --background: #0C0F14;
-  --foreground: #F5F1EC;
-  --obsidian: #0C0F14;
-  --burnt-umber: #A55534;
-  --terracotta: #C68C6E;
-  --oxblood: #3A1D19;
-  --paper: #EEE9E3;
-  --warm-ivory: #F5F1EC;
-  --card: #12161F;
-  --card-foreground: #F5F1EC;
-  --popover: #12161F;
-  --popover-foreground: #F5F1EC;
-  --primary: #A55534;
-  --primary-foreground: #F5F1EC;
-  --secondary: #3A1D19;
-  --secondary-foreground: #F5F1EC;
-  --muted: #171B24;
-  --muted-foreground: #C68C6E;
-  --accent: #241A18;
-  --accent-foreground: #F5F1EC;
-  --border: #281E1C;
-  --input: #281E1C;
-  --ring: #A55534;
+
+  /* Dark theme - Graphite & Oxblood core palette */
+  --obsidian-plum: #241910;
+  --smoked-plum: #302329;
+  --dark-merlot: #3B2931;
+  --deep-plum: #44323A;
+  --oxblood: #482832;
+  --burgundy-wine: #754653;
+  --antique-rose: #B18A91;
+  --soft-rose: #C6A0A7;
+  --rose-blush: #C69BA5;
+  --rose-ash: #E9DFDF;
+  --porcelain-white: #F4EDEF;
+  --dusty-rose-grey: #D5BFC3;
+  --muted-mauve-grey: #B9A5AA;
+  --oxblood-border: #513A42;
+
+  /* Semantic UI Bindings */
+  --background: #241910;
+  --foreground: #E9DFDF;
+  --card: #302329;
+  --card-secondary: #3B2931;
+  --card-elevated: #44323A;
+  --card-foreground: #E9DFDF;
+  --popover: #44323A;
+  --popover-foreground: #E9DFDF;
+  --primary: #754653;
+  --primary-foreground: #F4EDEF;
+  --secondary: #482832;
+  --secondary-foreground: #E9DFDF;
+  --muted: #3B2931;
+  --muted-foreground: #B9A5AA;
+  --accent: #44323A;
+  --accent-foreground: #F4EDEF;
+  --border: #513A42;
+  --input: #513A42;
+  --ring: #754653;
   --lh-prose-size: 16px;
   --lh-prose-leading: 1.5;
   --lh-heading-weight: 800;
@@ -51,7 +65,7 @@
 * {
   border-color: var(--border);
   scrollbar-width: thin;
-  scrollbar-color: #3A1D19 transparent;
+  scrollbar-color: #513A42 transparent;
 }
 
 body {
@@ -61,16 +75,17 @@ body {
   letter-spacing: -0.011em;
 }
 
-/* Subtle Linen & Paper Textures */
+/* Subtle Plum & Rose Textures */
 .texture-paper {
-  background-color: #EEE9E3;
-  background-image: radial-gradient(rgba(12, 15, 20, 0.05) 1px, transparent 0);
+  background-color: #302329;
+  background-image: radial-gradient(rgba(244, 237, 239, 0.05) 1px, transparent 0);
   background-size: 14px 14px;
 }
 
-.texture-obsidian {
-  background-color: #0C0F14;
-  background-image: radial-gradient(rgba(198, 140, 110, 0.035) 1px, transparent 0);
+.texture-obsidian,
+.texture-plum {
+  background-color: #241910;
+  background-image: radial-gradient(rgba(198, 155, 165, 0.035) 1px, transparent 0);
   background-size: 20px 20px;
 }
 
@@ -94,12 +109,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3A1D19;
+  background: #513A42;
   border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #A55534;
+  background: #754653;
 }
 
 /* Teaching prose (Inter / Source Sans 3 with size/leading tokens) */
@@ -111,7 +126,7 @@ body {
 
 .lh-prose strong,
 .lh-prose b {
-  color: #F5F1EC;
+  color: #F4EDEF;
   font-weight: 700;
 }
 

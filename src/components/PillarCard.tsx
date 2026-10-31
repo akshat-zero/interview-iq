@@ -10,23 +10,23 @@ interface PillarCardProps {
 export const PillarCard: React.FC<PillarCardProps> = ({ pillar }) => {
   const verdictTone =
     pillar.verdict === 'Exceptional' || pillar.verdict === 'Strong'
-      ? 'bg-[#C68C6E]/20 text-[#EEE9E3] border border-[#C68C6E]/40'
+      ? 'bg-[#754653]/30 text-[#F4EDEF] border border-[#C69BA5]/50'
       : pillar.verdict === 'Adequate'
-      ? 'bg-[#A55534]/20 text-[#C68C6E] border border-[#A55534]/40'
-      : 'bg-[#3A1D19]/40 text-[#A55534] border border-[#3A1D19]';
+      ? 'bg-[#482832]/50 text-[#B18A91] border border-[#513A42]'
+      : 'bg-[#302329] text-[#B9A5AA] border border-[#513A42]';
 
   return (
-    <div className="lh-card-enter flex flex-col justify-between rounded-xl border border-[#281E1C] bg-[#12161F] p-4 text-[#F5F1EC] shadow-md">
+    <div className="lh-card-enter flex flex-col justify-between rounded-xl border border-[#513A42] bg-[#302329] p-4 text-[#E9DFDF] shadow-md">
       <div>
         {/* Eyebrow + Verdict */}
         <div className="mb-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 font-ui text-xs font-medium uppercase tracking-wide text-[#C68C6E]">
+          <div className="flex items-center gap-2 font-ui text-xs font-medium uppercase tracking-wide text-[#B18A91]">
             <span>{pillar.title}</span>
             <span className={`rounded px-1.5 py-0.5 text-[10px] ${verdictTone}`}>
               {pillar.verdict.toLowerCase()}
             </span>
           </div>
-          <span className="font-mono text-sm tabular-nums text-[#F5F1EC]">
+          <span className="font-mono text-sm tabular-nums text-[#F4EDEF]">
             {pillar.score}%
           </span>
         </div>
@@ -37,23 +37,23 @@ export const PillarCard: React.FC<PillarCardProps> = ({ pillar }) => {
         </div>
 
         {/* Summary */}
-        <p className="lh-prose mb-3 text-sm text-[#C68C6E]/90 leading-relaxed font-sans-editorial">
+        <p className="lh-prose mb-3 text-sm text-[#D5BFC3] leading-relaxed font-sans-editorial">
           {pillar.summary}
         </p>
 
         {/* Strengths & Gaps */}
         <div className="space-y-2.5 text-sm">
           <div>
-            <div className="mb-1 font-ui text-[11px] uppercase tracking-wider text-[#A55534]">
+            <div className="mb-1 font-ui text-[11px] uppercase tracking-wider text-[#C69BA5]">
               Strengths
             </div>
             <ul className="space-y-1">
               {pillar.strengths.map((str, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-2 rounded-lg border border-[#C68C6E]/30 bg-[#241A18] px-2.5 py-1.5 font-sans-editorial text-sm text-[#F5F1EC]"
+                  className="flex items-start gap-2 rounded-lg border border-[#754653]/40 bg-[#3B2931] px-2.5 py-1.5 font-sans-editorial text-sm text-[#E9DFDF]"
                 >
-                  <span className="mt-0.5 font-mono text-xs text-[#C68C6E]">✓</span>
+                  <span className="mt-0.5 font-mono text-xs text-[#C69BA5]">✓</span>
                   <span>{str}</span>
                 </li>
               ))}
@@ -61,16 +61,16 @@ export const PillarCard: React.FC<PillarCardProps> = ({ pillar }) => {
           </div>
 
           <div>
-            <div className="mb-1 font-ui text-[11px] uppercase tracking-wider text-[#A55534]">
+            <div className="mb-1 font-ui text-[11px] uppercase tracking-wider text-[#B18A91]">
               Gaps
             </div>
             <ul className="space-y-1">
               {pillar.gaps.map((gap, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-2 rounded-lg border border-[#281E1C] bg-[#0C0F14] px-2.5 py-1.5 font-sans-editorial text-sm text-[#C68C6E]"
+                  className="flex items-start gap-2 rounded-lg border border-[#513A42] bg-[#241910] px-2.5 py-1.5 font-sans-editorial text-sm text-[#D5BFC3]"
                 >
-                  <span className="mt-0.5 font-mono text-xs text-[#A55534]">–</span>
+                  <span className="mt-0.5 font-mono text-xs text-[#B18A91]">–</span>
                   <span>{gap}</span>
                 </li>
               ))}
@@ -80,9 +80,9 @@ export const PillarCard: React.FC<PillarCardProps> = ({ pillar }) => {
       </div>
 
       {/* Pro Tip Callout */}
-      <div className="mt-3 border-t border-[#281E1C] pt-2.5">
-        <div className="font-sans-editorial text-xs text-[#C68C6E]/90">
-          <strong className="font-ui text-[11px] uppercase tracking-wide text-[#F5F1EC]">
+      <div className="mt-3 border-t border-[#513A42] pt-2.5">
+        <div className="font-sans-editorial text-xs text-[#D5BFC3]">
+          <strong className="font-ui text-[11px] uppercase tracking-wide text-[#F4EDEF]">
             Note:{' '}
           </strong>
           {pillar.actionableTip}

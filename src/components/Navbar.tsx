@@ -130,13 +130,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="InterviewIQ Home"
             className="flex items-center gap-2.5 transition-opacity hover:opacity-85 text-left"
           >
-            <LhMark className="w-8 h-8" iconClassName="w-4 h-4 text-[#C68C6E]" />
+            <LhMark className="w-8 h-8" iconClassName="w-4 h-4 text-[#C69BA5]" />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-bold tracking-tight text-foreground font-sans">
-                  Interview<span className="text-[#C68C6E]">IQ</span>
+                  Interview<span className="text-[#C69BA5]">IQ</span>
                 </span>
-                <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-[#241A18] text-[#C68C6E] uppercase border border-[#3A1D19]">MVP</span>
+                <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-[#482832] text-[#C69BA5] uppercase border border-[#513A42]">MVP</span>
               </div>
             </div>
           </button>

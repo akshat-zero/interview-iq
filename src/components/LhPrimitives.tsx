@@ -2,19 +2,19 @@ import React, { useState, CSSProperties, ReactNode } from 'react';
 import { Brain, ChevronDown, PanelLeftOpen } from 'lucide-react';
 
 /**
- * InterviewIqMark — Warm Desert Editorial brand mark.
+ * InterviewIqMark — Graphite & Oxblood brand mark.
  */
 export const InterviewIqMark: React.FC<{
   className?: string;
   iconClassName?: string;
 }> = ({
   className = 'w-9 h-9',
-  iconClassName = 'w-5 h-5 text-[#C68C6E]',
+  iconClassName = 'w-5 h-5 text-[#C69BA5]',
 }) => (
   <div
-    className={`relative flex items-center justify-center rounded-xl bg-gradient-to-tr from-[#3A1D19] via-[#A55534] to-[#C68C6E] p-[1px] shadow-lg shadow-[#3A1D19]/50 shrink-0 transition-transform ${className}`}
+    className={`relative flex items-center justify-center rounded-xl bg-gradient-to-tr from-[#482832] via-[#754653] to-[#C69BA5] p-[1px] shadow-lg shadow-[#482832]/60 shrink-0 transition-transform ${className}`}
   >
-    <div className="w-full h-full bg-[#0C0F14] rounded-[11px] flex items-center justify-center">
+    <div className="w-full h-full bg-[#241910] rounded-[11px] flex items-center justify-center">
       <Brain className={iconClassName} />
     </div>
   </div>
@@ -63,17 +63,17 @@ export const BrailleSpinner: React.FC<{ className?: string; label?: string }> = 
 );
 
 /**
- * ConfidenceRail — Warm Desert sunset progression ramp.
+ * ConfidenceRail — Graphite & Oxblood rose progression ramp.
  */
 export const CONFIDENCE_STOPS = [0, 30, 50, 70, 90, 100] as const;
 
 export const CONFIDENCE_COLORS: readonly string[] = [
-  '#3A1D19', // 0   (Oxblood)
-  '#A55534', // 30  (Burnt Umber)
-  '#C68C6E', // 50  (Terracotta)
-  '#D4A373', // 70  (Sandstone)
-  '#EEE9E3', // 90  (Paper)
-  '#F5F1EC', // 100 (Warm Ivory)
+  '#482832', // 0   (Oxblood)
+  '#754653', // 30  (Burgundy Wine)
+  '#B18A91', // 50  (Antique Rose)
+  '#C6A0A7', // 70  (Soft Rose)
+  '#C69BA5', // 90  (Rose Blush)
+  '#F4EDEF', // 100 (Porcelain White)
 ];
 
 export function getColorForScore(score: number): string {
@@ -88,11 +88,11 @@ export function getColorForScore(score: number): string {
 export function confidenceRailStyle(value: number): CSSProperties {
   const color = getColorForScore(value);
   return {
-    backgroundColor: '#0C0F14',
+    backgroundColor: '#241910',
     backgroundImage: [
       `linear-gradient(90deg, ${color} 0%, ${color} ${value}%, transparent ${value}%, transparent 100%)`,
       ...[30, 50, 70, 90].map(
-        () => 'linear-gradient(90deg, rgba(238,233,227,0.2), rgba(238,233,227,0.2))'
+        () => 'linear-gradient(90deg, rgba(233,223,223,0.18), rgba(233,223,223,0.18))'
       ),
     ].join(', '),
     backgroundSize: ['100% 100%', '1px 100%', '1px 100%', '1px 100%', '1px 100%'].join(', '),

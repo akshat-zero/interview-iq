@@ -11,10 +11,10 @@ export const RubricBadge: React.FC<RubricBadgeProps> = ({ type, value, className
     const num = Number(value);
     const tone =
       num >= 75
-        ? 'bg-[#C68C6E]/20 text-[#EEE9E3] border border-[#C68C6E]/40'
+        ? 'bg-[#754653]/30 text-[#F4EDEF] border border-[#C69BA5]/50'
         : num >= 50
-        ? 'bg-[#A55534]/20 text-[#C68C6E] border border-[#A55534]/40'
-        : 'bg-[#3A1D19]/40 text-[#A55534] border border-[#3A1D19]';
+        ? 'bg-[#482832]/50 text-[#B18A91] border border-[#513A42]'
+        : 'bg-[#302329] text-[#B9A5AA] border border-[#513A42]';
 
     return (
       <span
@@ -30,10 +30,10 @@ export const RubricBadge: React.FC<RubricBadgeProps> = ({ type, value, className
     const isFailing = val === 'F' || val === 'D';
     const isMid = val === 'C' || val === 'C+';
     const tone = isFailing
-      ? 'border-[#3A1D19] bg-[#3A1D19]/40 text-[#A55534]'
+      ? 'border-[#513A42] bg-[#302329] text-[#B9A5AA]'
       : isMid
-      ? 'border-[#A55534]/50 bg-[#A55534]/20 text-[#C68C6E]'
-      : 'border-[#C68C6E]/60 bg-[#C68C6E]/20 text-[#F5F1EC]';
+      ? 'border-[#513A42] bg-[#482832]/50 text-[#B18A91]'
+      : 'border-[#C69BA5]/60 bg-[#754653]/30 text-[#F4EDEF]';
 
     return (
       <span
@@ -46,13 +46,13 @@ export const RubricBadge: React.FC<RubricBadgeProps> = ({ type, value, className
 
   if (type === 'recommendation') {
     const val = String(value);
-    let tone = 'bg-[#12161F] text-[#F5F1EC] border-[#281E1C]';
+    let tone = 'bg-[#302329] text-[#E9DFDF] border-[#513A42]';
     if (val === 'Strong No Hire' || val === 'Critical Mismatch' || val === 'Needs Improvement') {
-      tone = 'bg-[#3A1D19]/40 text-[#A55534] border-[#3A1D19]';
+      tone = 'bg-[#302329] text-[#B9A5AA] border-[#513A42]';
     } else if (val === 'Borderline') {
-      tone = 'bg-[#A55534]/20 text-[#C68C6E] border-[#A55534]/40';
+      tone = 'bg-[#482832]/50 text-[#B18A91] border-[#513A42]';
     } else if (val === 'Hire' || val === 'Strong Hire' || val === 'Leaning Hire') {
-      tone = 'bg-[#C68C6E]/20 text-[#F5F1EC] border-[#C68C6E]/50';
+      tone = 'bg-[#754653]/30 text-[#F4EDEF] border-[#C69BA5]/50';
     }
 
     return (
@@ -73,7 +73,7 @@ export const RubricBadge: React.FC<RubricBadgeProps> = ({ type, value, className
     };
     return (
       <span
-        className={`inline-flex items-center rounded border border-[#281E1C] bg-[#12161F] px-2.5 py-0.5 font-ui text-[11px] uppercase tracking-wider text-[#C68C6E] ${className}`}
+        className={`inline-flex items-center rounded border border-[#513A42] bg-[#302329] px-2.5 py-0.5 font-ui text-[11px] uppercase tracking-wider text-[#D5BFC3] ${className}`}
       >
         {map[String(value)] || value}
       </span>

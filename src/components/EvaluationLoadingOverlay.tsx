@@ -19,19 +19,19 @@ export const EvaluationLoadingOverlay: React.FC<EvaluationLoadingOverlayProps> =
   const currentIndex = STEPS.findIndex((s) => s === currentStepText);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0C0F14]/85 p-4 backdrop-blur-sm">
-      <div className="settings-dialog-pop w-full max-w-md rounded-2xl border border-[#281E1C] bg-[#12161F] p-6 shadow-2xl shadow-[#3A1D19]/40">
-        <div className="mb-4 flex items-center justify-between border-b border-[#281E1C] pb-3">
-          <div className="flex items-center gap-2.5 font-ui text-xs uppercase tracking-wider text-[#C68C6E]">
-            <BrailleSpinner className="h-3 w-auto text-[#A55534]" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#241910]/85 p-4 backdrop-blur-sm">
+      <div className="settings-dialog-pop w-full max-w-md rounded-2xl border border-[#513A42] bg-[#44323A] p-6 shadow-2xl shadow-[#482832]/60">
+        <div className="mb-4 flex items-center justify-between border-b border-[#513A42] pb-3">
+          <div className="flex items-center gap-2.5 font-ui text-xs uppercase tracking-wider text-[#C69BA5]">
+            <BrailleSpinner className="h-3 w-auto text-[#C69BA5]" />
             <span>Evaluating Response</span>
           </div>
-          <span className="font-mono text-xs tabular-nums text-[#C68C6E]/80">
+          <span className="font-mono text-xs tabular-nums text-[#D5BFC3]">
             4-pillar harness
           </span>
         </div>
 
-        <div className="space-y-2 rounded-xl border border-[#281E1C] bg-[#0C0F14] p-3.5">
+        <div className="space-y-2 rounded-xl border border-[#513A42] bg-[#302329] p-3.5">
           {STEPS.map((step, idx) => {
             const isDone = currentIndex > idx;
             const isCurrent = currentIndex === idx || (currentIndex === -1 && idx === 0);
@@ -41,14 +41,14 @@ export const EvaluationLoadingOverlay: React.FC<EvaluationLoadingOverlayProps> =
                 key={idx}
                 className={`flex items-center gap-2.5 font-ui text-xs transition-colors ${
                   isDone
-                    ? 'text-[#F5F1EC]'
+                    ? 'text-[#E9DFDF]'
                     : isCurrent
-                    ? 'text-[#F5F1EC] font-semibold'
-                    : 'text-[#C68C6E]/40'
+                    ? 'text-[#F4EDEF] font-semibold'
+                    : 'text-[#B9A5AA]/50'
                 }`}
               >
                 <span className="w-4 shrink-0 text-center font-mono">
-                  {isDone ? <span className="text-[#C68C6E]">✓</span> : isCurrent ? <BrailleSpinner className="h-3 w-auto text-[#A55534]" /> : '·'}
+                  {isDone ? <span className="text-[#C69BA5]">✓</span> : isCurrent ? <BrailleSpinner className="h-3 w-auto text-[#C69BA5]" /> : '·'}
                 </span>
                 <span className="truncate">{step}</span>
               </div>
