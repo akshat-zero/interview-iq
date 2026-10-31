@@ -1,85 +1,100 @@
-# InterviewIQ — AI-Powered Multi-Domain Mock Interview Coach 🎙️⚡
+# InterviewIQ
 
-**InterviewIQ** is a modern, responsive web application MVP designed for high-stakes interview preparation across multiple specialized domains. Built for a fast 24-hour hackathon setup, it features zero database friction, instant local state persistence, interactive speech recognition, and an objective 4-pillar AI evaluation rubric.
+> An agent harness for high-stakes interview mastery and practice.
 
----
-
-## 🌟 Key Features
-
-### 1. High-Converting Modern Landing Page
-- **Hero & Value Proposition**: High-impact gradients, glowing indicators, dual-mode voice/text highlights.
-- **Interactive Domain Showcase**: Dynamic role spotlights for Software Engineering, Corporate Management, Arts & Vocal Performance, and Product Management.
-- **The 4-Pillar Rubric Preview**: Explains how answers are rigorously evaluated beyond generic chatbots.
-- **Side-by-Side Comparison**: Highlights why domain-specific rubric scoring outperforms standard conversational AI.
-
-### 2. Multi-Domain & Role Configuration
-- **Software Engineering & Architecture**:
-  - *Distributed Systems & Backend Architect*: High throughput, CAP trade-offs, rate-limiters, p99 latency triage.
-  - *Staff Full-Stack Engineer*: Architectural technical debt, legacy refactoring, Strangler Fig pattern.
-  - *Site Reliability & DevOps Lead*: Incident triage, blameless postmortems, SLOs/SLIs.
-- **Corporate Management & Executive Leadership**:
-  - *Director of Operations*: Zero-based budgeting, 20% cost reduction, cross-departmental throughput.
-  - *Senior Engineering Manager / VP*: Underperformance diagnostics, burnout recovery, 1-on-1 coaching.
-  - *VP of Strategy / Chief of Staff*: Enterprise fork vs roadmap conflict, MECE decision memos, crisis comms.
-- **Arts & Vocal Performance**:
-  - *Classical Opera Soloist*: Passaggio navigation, appoggio breath mechanics, aggiustamento, squillo/singer’s formant.
-  - *Musical Theatre Lead*: Audition callback psychology, mix/belt coordination, dramatic objective.
-  - *Contemporary Vocalist & Producer*: 8-show tour recovery, SOVT straw therapy, artistic disagreements with conductors.
-- **Product Management & Innovation**:
-  - *Principal PM & AI Product Lead*: Cohort retention decomposition, activation funnels, and trade-off matrices.
-
-### 3. Interactive Interview Workspace
-- **Dual Input Modes**:
-  - **Live Speech Mic Recording**: Uses browser `SpeechRecognition` / `webkitSpeechRecognition` with live audio waveform visualization (`AudioVisualizer`) and real-time transcription.
-  - **Text Mode**: Editable textarea allowing candidates to refine spoken transcripts or type directly.
-- **Interviewer Voice (TTS)**: Text-to-Speech playback (`window.speechSynthesis`) so the candidate can listen to the interviewer read the question aloud.
-- **Interviewer Hints & Evaluation Criteria**: Toggleable accordion revealing key focus points and thought prompts.
-- **Demo Presets**: Quick-load "Exemplar Answer" or "Basic Answer" buttons for instantaneous hackathon testing and judging!
-
-### 4. Structured 4-Pillar AI Evaluation Engine
-Every answer is benchmarked against four foundational pillars:
-1. **Relevance & Accuracy (30%)**: Evaluates factual precision, constraint adherence, and direct problem resolution.
-2. **Communication & Delivery (25%)**: Analyzes structural frameworks (STAR, MECE), verbal cadence, and conciseness.
-3. **Domain-Specific Polish (25%)**: Audits use of authentic professional terminology and explicit trade-off justifications.
-4. **Actionable Gaps (20%)**: Identifies unaddressed risks, failure modes, and anticipates interviewer follow-ups.
-
-### 5. Sleek Final Performance Dashboard
-- **Executive Scorecard**: Radial progress score (0-100), letter grade (A+, A, B, etc.), and hiring recommendation badge (*Strong Hire*, *Hire*, *Leaning Hire*, *Borderline*, *Needs Improvement*).
-- **Pillar Score Cards Grid**: Individual visual cards with scores, rating badges, bulleted strengths, actionable blind spots, and coach's pro-tips.
-- **Question-by-Question Deep Dive**: Accordion displaying question prompts, candidate transcripts, individual pillar scores, and an **Elevated 98/100 AI Model Answer**.
-- **Export & Session History**:
-  - Print / Save as PDF with custom print stylesheets.
-  - One-click copy performance summary to clipboard.
-  - Automatic `localStorage` session history persistence to review past mock sessions.
+InterviewIQ is an open-source, local-first mock interview harness. It replaces superficial chatbots and costly human coaching with structured, multi-domain interview simulations and transparent 4-pillar rubric scoring.
 
 ---
 
-## 🚀 Getting Started
+## What is InterviewIQ?
 
-The project is already initialized and compiled in your scratch workspace at:
-```
-C:\Users\DELL\.gemini\antigravity\scratch\interview-iq
-```
+Most AI interview tools act like open-ended chat assistants: they accept vague answers, offer surface-level praise, and fail to test real operational constraints.
 
-### Running the Development Server
+**InterviewIQ** is built to bridge that gap:
+- **Domain-Specific Depth**: Evaluates candidates against authentic industry standards across Software Engineering, Executive Management, Product Leadership, and Vocal & Performance Arts.
+- **Objective 4-Pillar Rubric**: Scores every answer against four clear evaluation categories:
+  1. **Relevance & Accuracy (35%)**: Direct constraint adherence and semantic precision.
+  2. **Communication & Delivery (25%)**: Structured frameworks (STAR, MECE) and executive clarity.
+  3. **Domain-Specific Polish (25%)**: Professional vocabulary, architectural trade-offs, and technical depth.
+  4. **Actionable Gaps (15%)**: Unaddressed edge cases, failure recovery, and anticipatory problem-solving.
+- **Dual Voice & Text Interaction**: Dictate answers using real-time browser speech recognition (`Web Speech API`) with live waveform visualization, or type directly. Listen to questions read aloud via `SpeechSynthesis`.
+- **Exemplar Answers & Practice Drills**: Compare your thinking against 98/100 reference model answers and drill isolated blind spots before full mocks.
+- **Local-First & Private**: 100% in-browser state persistence via `localStorage`. Audio transcripts and performance analytics never leave your device.
+
+---
+
+## Supported Domains & Roles
+
+| Domain | Roles Covered | Core Focus |
+| :--- | :--- | :--- |
+| **Software Engineering** | Distributed Systems Architect, Staff Full-Stack, SRE & DevOps Lead | CAP theorem, latency triage, failure modes, scalability |
+| **Corporate Management** | Director of Operations, Senior Engineering Manager, Chief of Staff | P&L ownership, MECE memos, team burnout, crisis leadership |
+| **Product Management** | Principal Product Manager, AI Product Lead | North star metrics, user journeys, prioritization trade-offs |
+| **Arts & Vocal Performance**| Classical Opera Soloist, Musical Theatre Lead, Vocalist & Producer | Appoggio mechanics, acoustic projection, audition psychology |
+
+---
+
+## Quickstart
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18.0.0 or higher)
+- npm, pnpm, or yarn
+
+### 1. Clone the repository
 ```bash
-cd C:\Users\DELL\.gemini\antigravity\scratch\interview-iq
+git clone https://github.com/akshat-zero/interview-iq.git
+cd interview-iq
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Start development server
+```bash
 npm run dev
 ```
 Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
-### Building for Production
+---
+
+## Production Build
+
+To test or deploy an optimized production bundle:
 ```bash
 npm run build
+npm run preview
 ```
-Creates an optimized, production-ready bundle in `dist/`.
+The output bundle will be placed in the `dist/` directory.
 
 ---
 
-## 🛠️ Tech Stack
-- **Framework**: React 18 with TypeScript
-- **Bundler**: Vite
-- **Styling**: Tailwind CSS with custom slate/indigo dark theme & glassmorphic accents
+## How It Works
+
+```
+1. Select Track ──> 2. Interview Simulation ──> 3. Real-Time Rubric ──> 4. Performance Scorecard
+   Choose domain      Dictate via mic or type       4-pillar breakdown      Letter grade, hiring
+   and role level     with live waveform & TTS      with exemplar answers   verdict & session PDF
+```
+
+1. **Configure Session**: Pick your domain, target role, difficulty (`Entry`, `Mid`, `Senior`, `Lead`), and question count (3 or 5 questions).
+2. **Respond to Probes**: Speak naturally into your microphone or type in the response dock. You can also listen to the prompt read aloud.
+3. **Inspect the Rubric**: Each question is evaluated with concrete strengths, missed constraints, and an elevated model answer.
+4. **Review Scorecard**: View aggregate rubric scores, hiring recommendation (`Strong Hire`, `Hire`, `Leaning Hire`, `Borderline`, `Needs Improvement`), and print or export your scorecard to PDF.
+
+---
+
+## Tech Stack
+
+- **Core**: React 18, TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS (custom Graphite & Oxblood dark theme)
 - **Icons**: Lucide React
-- **Animations & Effects**: Canvas Confetti, CSS Keyframe Audio Waveforms
-- **Browser APIs**: Web Speech API (`SpeechRecognition`, `speechSynthesis`), LocalStorage
+- **Web APIs**: Web Speech API (`SpeechRecognition`, `speechSynthesis`), AudioContext, LocalStorage
+
+---
+
+## License
+
+MIT © [InterviewIQ Contributors](https://github.com/akshat-zero/interview-iq)
