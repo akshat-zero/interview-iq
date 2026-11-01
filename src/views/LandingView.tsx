@@ -21,6 +21,7 @@ import {
 
 export interface LandingViewProps {
   onStartDomain: (domainId: DomainId) => void;
+  onOpenWalkingSelector?: () => void;
   onQuickStartInterview?: (
     domainId: DomainId,
     roleId: string,
@@ -38,6 +39,7 @@ export interface LandingViewProps {
 
 export const LandingView: React.FC<LandingViewProps> = ({
   onStartDomain,
+  onOpenWalkingSelector,
   onOpenSelector,
   onOpenRubric,
   onOpenStudy,
@@ -147,7 +149,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
       <main className="mx-auto max-w-5xl px-6 py-14 sm:px-8 sm:py-20">
         {/* Editorial Sub-Head */}
         <div className="mb-4 font-mono text-xs uppercase tracking-widest text-[#C69BA5]">
-          A desktop and web app for AI mock interviews and practice.
+          A web app for structured mock interviews and practice.
         </div>
 
         {/* Hero Title & Emblem Row */}
@@ -181,6 +183,16 @@ export const LandingView: React.FC<LandingViewProps> = ({
               <span>Start Mock Interview</span>
               <ArrowRight className="h-3.5 w-3.5 text-[#F4EDEF]" />
             </button>
+            {onOpenWalkingSelector && (
+              <button
+                type="button"
+                onClick={onOpenWalkingSelector}
+                className="inline-flex items-center gap-2 rounded-lg border border-[#754653]/70 bg-[#302329] px-5 py-2.5 font-ui text-xs font-semibold text-[#E9DFDF] transition-all hover:border-[#C69BA5] hover:text-[#F4EDEF]"
+              >
+                <span>Try Walking Interview</span>
+                <span aria-hidden="true">🎧</span>
+              </button>
+            )}
             <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] text-[#D5BFC3]">
               {DOMAINS.map((d, i) => (
                 <React.Fragment key={d.id}>
@@ -201,7 +213,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
           <div className="font-mono text-xs text-[#B9A5AA] md:text-right">
             Free and open source.
             <br />
-            Objective 4-pillar evaluation.
+              AI-generated 4-pillar evaluation.
           </div>
         </div>
 
@@ -212,10 +224,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
               I. THE IDEA
             </h2>
             <p className="font-sans-editorial text-base leading-relaxed text-[#E9DFDF]/90">
-              The app probes and evaluates your problem-solving under pressure: assessing what you know, how you communicate, and where your thinking breaks down.
+              Practice with AI-generated interview questions and feedback tailored to your selected profession and role.
             </p>
             <p className="font-sans-editorial text-base leading-relaxed text-[#D5BFC3]">
-              Mock interviews are traditionally either shallow scripted question sets or expensive $200/hr human sessions with inconsistent feedback. InterviewIQ acts as an adaptive harness: it analyzes trade-offs, challenges weak assumptions, and constructs a live competency profile across 4 transparent pillars.
+              InterviewIQ generates role-specific questions, probes answers with AI follow-ups, and provides AI-generated practice feedback. AI responses can be imperfect and are not hiring assessments.
             </p>
             <div className="pt-2">
               <button
@@ -250,7 +262,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               />
             </div>
             <p className="mt-3 text-center font-mono text-[11px] text-[#B9A5AA]">
-              An active interview session. The harness probes architectural trade-offs, evaluates vocal cadence, and breaks down rubric scores in real time.
+              A sample interview screen with answer recording and structured rubric feedback.
             </p>
           </div>
         </section>
@@ -268,7 +280,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 i) PROBE
               </h3>
               <p className="font-sans-editorial text-sm leading-relaxed text-[#D5BFC3]">
-                The agent probes the limits of your answers to find gaps, edge-cases, and fuzzy assumptions. Questions are reasoned and adaptive, not scripted.
+                Choose from a prepared question bank for your selected domain and role. Questions do not adapt to your previous answers.
               </p>
 
               {/* Probe SVG Diagram */}
@@ -302,7 +314,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 ii) PLAN
               </h3>
               <p className="font-sans-editorial text-sm leading-relaxed text-[#D5BFC3]">
-                The agent builds a directed dependency graph of your competencies, tracking what you've proven and what concepts to test next.
+                Review the concepts associated with each prompt and use the feedback to decide what to practice next.
               </p>
 
               {/* Plan Diagram */}
@@ -343,7 +355,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 iii) TEACH
               </h3>
               <p className="font-sans-editorial text-sm leading-relaxed text-[#D5BFC3]">
-                Every response is scored across 4 objective pillars: Technical Relevance, Delivery & Cadence, Domain Polish, and Critical Gaps.
+                Every complete response gets AI-generated feedback across four practice areas. Scores can be imperfect, so treat them as guidance rather than objective measurements.
               </p>
 
               {/* Evaluate Loop Diagram */}
@@ -358,7 +370,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                   </div>
                   <div className="h-4 w-px bg-[#513A42]" />
                   <div className="w-full rounded border border-[#C69BA5]/60 bg-[#482832]/40 px-3 py-2 text-center text-[#C69BA5]">
-                    Adaptive Feedback
+                    Practice Feedback
                   </div>
                 </div>
               </div>
@@ -434,7 +446,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               </div>
             </div>
             <p className="mt-3 text-center font-mono text-[11px] text-[#B9A5AA]">
-              Adaptive remediation. Isolating prerequisite failure modes and proving mastery before composite evaluation.
+              Practice pathways with prepared drills, frameworks, and review prompts.
             </p>
           </div>
         </section>
@@ -497,10 +509,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
               V. THE TERMS
             </h2>
             <p className="font-sans-editorial text-base leading-relaxed text-[#E9DFDF]/90">
-              Local-first evaluation and audio recording. All your interview transcripts, recorded audio, and rubric evaluations are stored directly in your browser. Zero telemetry or data harvesting.
+              Session history and transcripts are saved in this browser. Interview answers, role details, and generated questions are sent to OpenAI to provide AI questions, follow-ups, and evaluation. If API credits are unavailable, the built-in question bank and local rubric are used instead. Voice transcription uses your browser's speech recognition service, whose processing may involve that browser provider. Optional video cues run on-device; the app does not record or upload video. The MediaPipe runtime may send product usage metrics. Recorded audio is not included in saved session history.
             </p>
             <p className="font-sans-editorial text-base leading-relaxed text-[#D5BFC3]">
-              Transparent 4-pillar rubrics. Every score is explained with concrete strengths, weaknesses, and exemplar answers — no opaque, black-box AI scores.
+              AI-generated 4-pillar feedback with suggested strengths, gaps, and answer outlines. It can make mistakes, does not assess spoken cadence, and does not make hiring decisions.
             </p>
             <p className="font-sans-editorial text-base leading-relaxed text-[#B9A5AA]">
               Free and open source. Train whenever you want, for as long as you want.
@@ -543,7 +555,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <Brain className="h-3 w-3 text-[#C69BA5]" />
               </div>
             </div>
-            <span>InterviewIQ · Open Source AI Interview Harness</span>
+            <span>InterviewIQ · Open Source Interview Practice</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">

@@ -1,8 +1,8 @@
-export type DomainId = 'swe' | 'management' | 'arts_vocal' | 'product';
+export type DomainId = 'swe' | 'management' | 'arts_vocal' | 'product' | 'other';
 
 export type DifficultyLevel = 'entry' | 'mid' | 'senior' | 'lead_executive';
 
-export type InterviewLength = 3 | 5;
+export type InterviewLength = number;
 
 export interface RoleOption {
   id: string;
@@ -82,6 +82,10 @@ export interface QuestionEvaluation {
   standoutQuotes: string[];
   criticalGaps: string[];
   elevatedModelAnswer: string;
+  /** Local practice-rubric gate used to decide whether another follow-up is needed. */
+  rubricSatisfied?: boolean;
+  missingConcepts?: string[];
+  evaluationSource?: 'ai' | 'local';
 }
 
 export interface PracticeQuestion {
@@ -122,7 +126,7 @@ export interface UserProfile {
   email?: string;
   phone?: string;
   avatar: string;
-  primaryProvider: 'google' | 'phone' | 'guest';
+  primaryProvider: 'google' | 'phone' | 'guest' | 'chatgpt';
   isGoogleLinked: boolean;
   googleEmail?: string;
   isPhoneLinked: boolean;
@@ -151,4 +155,5 @@ export interface InterviewSession {
   keyStrengths: string[];
   criticalImprovements: string[];
   totalTimeSeconds: number;
+  evaluationSource?: 'ai' | 'local' | 'mixed';
 }

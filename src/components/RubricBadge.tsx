@@ -6,6 +6,19 @@ interface RubricBadgeProps {
   className?: string;
 }
 
+export const formatPracticeSignal = (value: string | number): string => {
+  const labels: Record<string, string> = {
+    'Strong No Hire': 'Needs work',
+    'Needs Improvement': 'Needs work',
+    Borderline: 'Developing',
+    'Leaning Hire': 'On track',
+    Hire: 'Strong practice signal',
+    'Strong Hire': 'Strong practice signal',
+  };
+  const label = String(value);
+  return labels[label] || label;
+};
+
 export const RubricBadge: React.FC<RubricBadgeProps> = ({ type, value, className = '' }) => {
   if (type === 'score') {
     const num = Number(value);
@@ -46,6 +59,7 @@ export const RubricBadge: React.FC<RubricBadgeProps> = ({ type, value, className
 
   if (type === 'recommendation') {
     const val = String(value);
+    const practiceLabel = formatPracticeSignal(val);
     let tone = 'bg-[#302329] text-[#E9DFDF] border-[#513A42]';
     if (val === 'Strong No Hire' || val === 'Critical Mismatch' || val === 'Needs Improvement') {
       tone = 'bg-[#302329] text-[#B9A5AA] border-[#513A42]';
@@ -59,7 +73,7 @@ export const RubricBadge: React.FC<RubricBadgeProps> = ({ type, value, className
       <span
         className={`inline-flex items-center rounded border px-2.5 py-0.5 font-ui text-[11px] uppercase tracking-wider ${tone} ${className}`}
       >
-        {val}
+        {practiceLabel}
       </span>
     );
   }

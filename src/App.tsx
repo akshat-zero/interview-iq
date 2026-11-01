@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { DOMAINS, getQuestionsForDomainAndRole } from './data/domains';
+import {
+  DOMAINS,
+  OTHER_DOMAIN,
+  getCustomProfessionQuestions,
+  getQuestionsForDomainAndRole
+} from './data/domains';
 import {
   DomainId,
   DifficultyLevel,
@@ -13,15 +18,19 @@ import { Navbar } from './components/Navbar';
 import { LoginPortal } from './views/LoginPortal';
 import { LandingView } from './views/LandingView';
 import { InterviewView } from './views/InterviewView';
+import { WalkingInterviewView } from './views/WalkingInterviewView';
 import { PracticeModulesView } from './views/PracticeModulesView';
 import { DashboardView } from './views/DashboardView';
 import { DomainSelectorModal } from './components/DomainSelectorModal';
 import { RubricExplainerModal } from './components/RubricExplainerModal';
 import { SessionHistoryModal } from './components/SessionHistoryModal';
 import { UserProfileModal } from './components/UserProfileModal';
+import { AIServiceError, generateInterviewQuestions } from './services/aiInterviewService';
 
 const USER_STORAGE_KEY = 'interviewiq_active_user_v1';
 const SESSIONS_BASE_KEY = 'interviewiq_user_sessions_v1';
+const QUESTION_HISTORY_BASE_KEY = 'interviewiq_seen_questions_v1';
+const QUESTION_PROMPT_HISTORY_BASE_KEY = 'interviewiq_seen_question_prompts_v1';
 const SIDEBAR_STORAGE_KEY = 'lh:sidebar-open';
 
 const DEFAULT_USER: UserProfile = {
@@ -47,7 +56,20 @@ export function App() {
     }
   });
 
-  const [currentView, setCurrentView] = useState<'landing' | 'interview' | 'dashboard' | 'study'>('landing');
+  const [seenQuestionIds, setSeenQuestionIds] = useState<string[]>(() => {
+    try {
+      const stored = currentUser
+        ? localStorage.getItem(`${QUESTION_HISTORY_BASE_KEY}_${currentUser.id}`)
+        : null;
+      const parsed = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
+    } catch {
+      return [];
+    }
+  });
+  const [seenQuestionPrompts, setSeenQuestionPrompts] = useState<string[]>([]);
+
+  const [currentView, setCurrentView] = useState<'landing' | 'interview' | 'walking' | 'dashboard' | 'study'>('landing');
 
   // LearnHarness persistent collapsible left sidebar state
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
@@ -88,6 +110,9 @@ export function App() {
   const [activeRoleId, setActiveRoleId] = useState<string>(DOMAINS[0].roles[0].id);
   const [activeDifficulty, setActiveDifficulty] = useState<DifficultyLevel>('senior');
   const [activeQuestions, setActiveQuestions] = useState<InterviewQuestion[]>([]);
+  const [activeFallbackQuestions, setActiveFallbackQuestions] = useState<InterviewQuestion[]>([]);
+  const [activeUsesLocalFallback, setActiveUsesLocalFallback] = useState(false);
+  const [activeFallbackNotice, setActiveFallbackNotice] = useState('');
 
   // Current session & completed sessions
   const [currentSession, setCurrentSession] = useState<InterviewSession | null>(null);
@@ -99,12 +124,37 @@ export function App() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [modalInitialDomain, setModalInitialDomain] = useState<DomainId>('swe');
+  const [modalInitialRoleId, setModalInitialRoleId] = useState<string | undefined>();
+  const [modalInitialCustomProfession, setModalInitialCustomProfession] = useState('');
+  const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
+  const [questionGenerationError, setQuestionGenerationError] = useState('');
+  const [walkingLaunch, setWalkingLaunch] = useState(false);
 
   // Load user sessions whenever currentUser changes
   useEffect(() => {
     if (!currentUser) {
       setSavedSessions([]);
+      setSeenQuestionIds([]);
+      setSeenQuestionPrompts([]);
       return;
+    }
+
+    try {
+      const storedQuestionIds = localStorage.getItem(`${QUESTION_HISTORY_BASE_KEY}_${currentUser.id}`);
+      const parsedQuestionIds = storedQuestionIds ? JSON.parse(storedQuestionIds) : [];
+      setSeenQuestionIds(Array.isArray(parsedQuestionIds)
+        ? parsedQuestionIds.filter((id): id is string => typeof id === 'string')
+        : []);
+    } catch {
+      setSeenQuestionIds([]);
+    }
+
+    try {
+      const storedPrompts = localStorage.getItem(`${QUESTION_PROMPT_HISTORY_BASE_KEY}_${currentUser.id}`);
+      const parsedPrompts = storedPrompts ? JSON.parse(storedPrompts) : [];
+      setSeenQuestionPrompts(Array.isArray(parsedPrompts) ? parsedPrompts.filter((prompt): prompt is string => typeof prompt === 'string') : []);
+    } catch {
+      setSeenQuestionPrompts([]);
     }
 
     try {
@@ -177,32 +227,137 @@ export function App() {
     try {
       const key = `${SESSIONS_BASE_KEY}_${currentUser.id}`;
       localStorage.removeItem(key);
+      localStorage.removeItem(`${QUESTION_HISTORY_BASE_KEY}_${currentUser.id}`);
+      localStorage.removeItem(`${QUESTION_PROMPT_HISTORY_BASE_KEY}_${currentUser.id}`);
+      setSeenQuestionIds([]);
+      setSeenQuestionPrompts([]);
     } catch (e) {
       console.warn('Failed to remove user history from storage:', e);
     }
   };
 
-  const handleStartInterview = (
+  const handleStartInterview = async (
     domainId: DomainId,
     roleId: string,
     difficulty: DifficultyLevel,
-    length: InterviewLength
+    length: InterviewLength,
+    customProfession = ''
   ) => {
-    const domain = DOMAINS.find(d => d.id === domainId) || DOMAINS[0];
-    const resolvedRoleId = roleId || domain.roles[0].id;
-    const questions = getQuestionsForDomainAndRole(domainId, resolvedRoleId, length);
+    const requestedCount = Math.max(1, Math.min(50, Math.floor(length) || 1));
+    const domain = domainId === 'other'
+      ? {
+          ...OTHER_DOMAIN,
+          title: customProfession,
+          shortTitle: customProfession,
+          roles: [{ ...OTHER_DOMAIN.roles[0], name: customProfession }],
+        }
+      : DOMAINS.find(d => d.id === domainId) || DOMAINS[0];
+    const resolvedRoleId = domainId === 'other' ? OTHER_DOMAIN.roles[0].id : (roleId || domain.roles[0].id);
+    const selectedRole = domain.roles.find(roleOption => roleOption.id === resolvedRoleId) || domain.roles[0];
+    setIsGeneratingQuestions(true);
+    setQuestionGenerationError('');
+    try {
+      const excludedPrompts = [...new Set([
+        ...seenQuestionPrompts,
+        ...savedSessions.flatMap(session => session.questions.map(question => question.prompt))
+      ])];
+      const excludedIds = [...new Set([
+        ...seenQuestionIds,
+        ...savedSessions.flatMap(session => session.questions.map(question => question.id))
+      ])];
+      const getLocalQuestions = (count: number, excluded: string[]) => domainId === 'other'
+        ? getCustomProfessionQuestions(customProfession, count, difficulty, excluded)
+        : getQuestionsForDomainAndRole(domainId, resolvedRoleId, count, excluded);
+      const previouslyUsedPrompts = new Set(excludedPrompts.map(prompt => prompt.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()));
+      let fallbackQuestions = getLocalQuestions(50, excludedIds);
+      fallbackQuestions = fallbackQuestions.filter(question => !previouslyUsedPrompts.has(question.prompt.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()));
+      if (fallbackQuestions.length === 0) {
+        fallbackQuestions = getLocalQuestions(50, [])
+          .filter(question => !previouslyUsedPrompts.has(question.prompt.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()));
+      }
+      if (fallbackQuestions.length === 0) fallbackQuestions = getLocalQuestions(50, []);
+      let usingLocalFallback = false;
+      let fallbackNotice = '';
+      let questions: InterviewQuestion[];
+      try {
+        questions = await generateInterviewQuestions({
+          domainId,
+          domain: domain.title,
+          domainDescription: domain.description,
+          roleId: resolvedRoleId,
+          role: selectedRole.name,
+          roleDescription: selectedRole.description,
+          profession: domainId === 'other' ? customProfession : '',
+          difficulty,
+          count: requestedCount,
+          excludedPrompts: excludedPrompts.slice(-120)
+        });
+      } catch (error) {
+        if (!(error instanceof AIServiceError) || error.code !== 'AI_CREDITS') throw error;
+        usingLocalFallback = true;
+        questions = fallbackQuestions.slice(0, requestedCount);
+        if (questions.length === 0) throw new Error('No questions are available for this role.');
+        fallbackNotice = `OpenAI usage is unavailable or has reached its limit. This mock is using the built-in question bank and local practice rubric${questions.length < requestedCount ? `; only ${questions.length} questions are available for this role` : ''}.`;
+      }
+      const nextSeenQuestionIds = [...new Set([...seenQuestionIds, ...questions.map(question => question.id)])];
+      const nextSeenPrompts = [...new Set([...seenQuestionPrompts, ...questions.map(question => question.prompt)])];
+      setSeenQuestionIds(nextSeenQuestionIds);
+      setSeenQuestionPrompts(nextSeenPrompts);
+      if (currentUser) {
+        try {
+          localStorage.setItem(`${QUESTION_HISTORY_BASE_KEY}_${currentUser.id}`, JSON.stringify(nextSeenQuestionIds));
+          localStorage.setItem(`${QUESTION_PROMPT_HISTORY_BASE_KEY}_${currentUser.id}`, JSON.stringify(nextSeenPrompts));
+        } catch {
+          // The generated session remains usable if browser storage is unavailable.
+        }
+      }
 
-    setActiveDomain(domain);
-    setActiveRoleId(resolvedRoleId);
-    setActiveDifficulty(difficulty);
-    setActiveQuestions(questions);
+      setActiveDomain(domain);
+      setActiveRoleId(resolvedRoleId);
+      setActiveDifficulty(difficulty);
+      setActiveQuestions(questions);
+      setActiveFallbackQuestions(fallbackQuestions);
+      setActiveUsesLocalFallback(usingLocalFallback);
+      setActiveFallbackNotice(fallbackNotice);
+      setModalInitialCustomProfession(domainId === 'other' ? customProfession : '');
+      setIsDomainModalOpen(false);
+      setCurrentView(walkingLaunch ? 'walking' : 'interview');
+      setWalkingLaunch(false);
+    } catch (error) {
+      setQuestionGenerationError(error instanceof Error ? error.message : 'The AI could not generate questions. Please try again.');
+    } finally {
+      setIsGeneratingQuestions(false);
+    }
+  };
 
-    setIsDomainModalOpen(false);
-    setCurrentView('interview');
+  const handleLocalFallbackActivated = (questions: InterviewQuestion[]) => {
+    if (questions.length === 0) return;
+    const nextSeenQuestionIds = [...new Set([...seenQuestionIds, ...questions.map(question => question.id)])];
+    const nextSeenPrompts = [...new Set([...seenQuestionPrompts, ...questions.map(question => question.prompt)])];
+    setSeenQuestionIds(nextSeenQuestionIds);
+    setSeenQuestionPrompts(nextSeenPrompts);
+    if (!currentUser) return;
+    try {
+      localStorage.setItem(`${QUESTION_HISTORY_BASE_KEY}_${currentUser.id}`, JSON.stringify(nextSeenQuestionIds));
+      localStorage.setItem(`${QUESTION_PROMPT_HISTORY_BASE_KEY}_${currentUser.id}`, JSON.stringify(nextSeenPrompts));
+    } catch {
+      // Continue the current interview if browser storage is unavailable.
+    }
   };
 
   const handleStartDomainFromLanding = (domainId: DomainId) => {
+    setWalkingLaunch(false);
     setModalInitialDomain(domainId);
+    setModalInitialRoleId(undefined);
+    setModalInitialCustomProfession('');
+    setIsDomainModalOpen(true);
+  };
+
+  const handleConfigureRole = (domainId: DomainId, roleId?: string) => {
+    setWalkingLaunch(false);
+    setModalInitialDomain(domainId);
+    setModalInitialRoleId(roleId);
+    setModalInitialCustomProfession('');
     setIsDomainModalOpen(true);
   };
 
@@ -226,9 +381,19 @@ export function App() {
       {currentView === 'landing' ? (
         <LandingView
           onStartDomain={handleStartDomainFromLanding}
+          onOpenWalkingSelector={() => {
+            setWalkingLaunch(true);
+            setModalInitialDomain(activeDomain.id);
+            setModalInitialRoleId(activeRoleId);
+            setModalInitialCustomProfession(activeDomain.id === 'other' ? activeDomain.roles[0].name : '');
+            setIsDomainModalOpen(true);
+          }}
           onQuickStartInterview={handleStartInterview}
           onOpenSelector={() => {
+            setWalkingLaunch(false);
             setModalInitialDomain(activeDomain.id);
+            setModalInitialRoleId(activeRoleId);
+            setModalInitialCustomProfession(activeDomain.id === 'other' ? activeDomain.roles[0].name : '');
             setIsDomainModalOpen(true);
           }}
           onOpenRubric={() => setIsRubricModalOpen(true)}
@@ -245,7 +410,10 @@ export function App() {
             open={sidebarOpen}
             onToggle={toggleSidebar}
             onOpenDomainSelector={() => {
+              setWalkingLaunch(false);
               setModalInitialDomain(activeDomain.id);
+              setModalInitialRoleId(activeRoleId);
+              setModalInitialCustomProfession(activeDomain.id === 'other' ? activeDomain.roles[0].name : '');
               setIsDomainModalOpen(true);
             }}
             onOpenRubricExplainer={() => setIsRubricModalOpen(true)}
@@ -253,7 +421,7 @@ export function App() {
             onOpenProfile={() => setIsProfileModalOpen(true)}
             onOpenStudy={() => setCurrentView('study')}
             onNavigateHome={() => setCurrentView('landing')}
-            onQuickStartRole={handleStartInterview}
+            onQuickStartRole={handleConfigureRole}
             onSelectSession={handleSelectHistorySession}
             savedSessions={savedSessions}
             activeDomainId={activeDomain.id}
@@ -274,8 +442,24 @@ export function App() {
                 roleId={activeRoleId}
                 difficulty={activeDifficulty}
                 questions={activeQuestions}
+                fallbackQuestions={activeFallbackQuestions}
+                initialLocalFallback={activeUsesLocalFallback}
+                initialFallbackNotice={activeFallbackNotice}
+                onLocalFallbackActivated={handleLocalFallbackActivated}
                 onFinishInterview={handleFinishInterview}
                 onExitToHome={() => setCurrentView('landing')}
+              />
+            )}
+
+            {currentView === 'walking' && (
+              <WalkingInterviewView
+                domain={activeDomain}
+                roleId={activeRoleId}
+                difficulty={activeDifficulty}
+                questions={activeQuestions}
+                initialLocalFallback={activeUsesLocalFallback}
+                onFinishInterview={handleFinishInterview}
+                onExit={() => setCurrentView('landing')}
               />
             )}
 
@@ -285,7 +469,10 @@ export function App() {
                 onToggleSidebar={toggleSidebar}
                 session={currentSession}
                 onStartNewSession={() => {
+                  setWalkingLaunch(false);
                   setModalInitialDomain(currentSession.domainId);
+                  setModalInitialRoleId(undefined);
+                  setModalInitialCustomProfession(currentSession.domainId === 'other' ? currentSession.roleName : '');
                   setIsDomainModalOpen(true);
                 }}
                 onExitHome={() => setCurrentView('landing')}
@@ -299,7 +486,7 @@ export function App() {
                 onBackToHome={() => setCurrentView('landing')}
                 onLaunchInterviewForDomain={(domainId) => {
                   const defaultRoleId = DOMAINS.find(d => d.id === domainId)?.roles[0].id || '';
-                  handleStartInterview(domainId, defaultRoleId, 'senior', 3);
+                  handleConfigureRole(domainId, defaultRoleId);
                 }}
               />
             )}
@@ -310,9 +497,13 @@ export function App() {
       {/* Modals */}
       <DomainSelectorModal
         isOpen={isDomainModalOpen}
-        onClose={() => setIsDomainModalOpen(false)}
+        onClose={() => { setWalkingLaunch(false); setIsDomainModalOpen(false); }}
         onStartInterview={handleStartInterview}
         initialDomainId={modalInitialDomain}
+        initialRoleId={modalInitialRoleId}
+        initialCustomProfession={modalInitialCustomProfession}
+        isGeneratingQuestions={isGeneratingQuestions}
+        generationError={questionGenerationError}
       />
 
       <RubricExplainerModal

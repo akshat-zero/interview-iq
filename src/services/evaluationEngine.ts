@@ -119,18 +119,9 @@ export async function evaluateInterviewAnswer(
 ): Promise<QuestionEvaluation> {
   const { question, userAnswer, timeSpentSeconds, inputMethod, domain } = options;
 
-  // Realistic AI evaluation multi-step progression
+  // This is a local, rule-based practice check, not an AI evaluation.
   if (onProgress) {
-    onProgress('Ingesting audio transcript & analyzing semantic intent...');
-    await new Promise((r) => setTimeout(r, 400));
-    onProgress('Auditing Relevance & Accuracy against prompt constraints...');
-    await new Promise((r) => setTimeout(r, 450));
-    onProgress('Evaluating Communication structure, delivery & clarity...');
-    await new Promise((r) => setTimeout(r, 400));
-    onProgress('Measuring Domain-Specific Polish & high-leverage terminology...');
-    await new Promise((r) => setTimeout(r, 400));
-    onProgress('Extracting Actionable Gaps & generating elevated model answer...');
-    await new Promise((r) => setTimeout(r, 400));
+    onProgress('Checking your answer against the prompt and practice rubric...');
   }
 
   const cleanText = userAnswer.trim();
@@ -210,34 +201,34 @@ export async function evaluateInterviewAnswer(
 
   // SCENARIO A: GIBBERISH / INCOHERENT INPUT
   if (isGibberish) {
-    relScore = Math.floor(Math.random() * 6) + 8; // 8 - 14
-    commScore = Math.floor(Math.random() * 8) + 10; // 10 - 18
-    polishScore = Math.floor(Math.random() * 6) + 6; // 6 - 12
-    gapsScore = Math.floor(Math.random() * 6) + 8; // 8 - 14
+    relScore = 10;
+    commScore = 14;
+    polishScore = 9;
+    gapsScore = 11;
     grade = 'F';
     hireRecommendation = 'Strong No Hire';
-    executiveSummary = `CRITICAL REJECTION: The submitted response appears to be random keys, spam, or incoherent text. In a professional interview, non-responsive or gibberish answers result in immediate termination of the interview with a definitive Strong No-Hire recommendation.`;
+    executiveSummary = 'This response is too short or repetitive to assess. Try answering in a few complete sentences and include one concrete example.';
   }
   // SCENARIO B: COMPLETELY IRRELEVANT / OFF-TOPIC ANSWER (e.g. talking about ducks, cookies, groceries, movies)
   else if (isOffTopic) {
-    relScore = Math.floor(Math.random() * 10) + 12; // 12 - 22
+    relScore = 16;
     // If they wrote fluent English paragraphs about the wrong topic, communication is capped at 32
     commScore = Math.min(32, Math.max(18, Math.round(wordCount > 30 ? 30 : 20)));
-    polishScore = Math.floor(Math.random() * 8) + 12; // 12 - 20 (Zero domain terminology)
-    gapsScore = Math.floor(Math.random() * 8) + 14; // 14 - 22 (100% of question unaddressed)
+    polishScore = 16;
+    gapsScore = 18;
     grade = 'F';
     hireRecommendation = 'Strong No Hire';
-    executiveSummary = `SEVERE RELEVANCE MISMATCH: Your answer is completely off-topic and did not address the core prompt for "${question.category}". The submission contained zero technical concepts or frameworks relevant to "${question.prompt.slice(0, 75)}...". Speaking fluently about an unrelated topic will result in an immediate Strong No-Hire rating from any interview panel.`;
+    executiveSummary = `This response did not include terms the practice rubric associates with ${question.category}. Re-read the prompt and try connecting your answer to its main challenge.`;
   }
   // SCENARIO C: SUPERFICIAL / BARE MINIMUM (1 keyword, < 25 words)
   else if (isShallow) {
-    relScore = Math.floor(Math.random() * 12) + 40; // 40 - 52
-    commScore = Math.floor(Math.random() * 10) + 44; // 44 - 54
-    polishScore = Math.floor(Math.random() * 12) + 38; // 38 - 50
-    gapsScore = Math.floor(Math.random() * 10) + 42; // 42 - 52
+    relScore = 46;
+    commScore = 49;
+    polishScore = 44;
+    gapsScore = 47;
     grade = 'D';
     hireRecommendation = 'Needs Improvement';
-    executiveSummary = `SUPERFICIAL RESPONSE: You acknowledged a relevant keyword (${matchedConcepts.slice(0, 2).join(', ') || 'general terminology'}), but the answer lacked technical depth, mechanism design, and trade-off considerations. You need to substantiate your solution with concrete implementation steps and risk mitigations.`;
+    executiveSummary = `You touched on ${matchedConcepts.slice(0, 2).join(', ') || 'a relevant idea'}, but could make the answer more useful with a specific example, your actions, and the result.`;
   }
   // SCENARIO D: MODERATE / CREDIBLE RESPONSE
   else if (isModerate && !isThorough) {
@@ -248,18 +239,18 @@ export async function evaluateInterviewAnswer(
     gapsScore = Math.min(80, 64 + (wordCount > 50 ? 6 : 0));
     grade = relScore >= 78 ? 'B+' : 'B';
     hireRecommendation = relScore >= 78 ? 'Leaning Hire' : 'Borderline';
-    executiveSummary = `SOLID FOUNDATION: Credible response addressing the primary challenge in "${question.category}". You demonstrated familiarity with key principles (${matchedConcepts.slice(0, 3).join(', ')}). To elevate this to a Strong Hire, provide deeper analysis of edge cases, failovers, and quantitative benchmarks.`;
+    executiveSummary = `Your answer includes relevant ideas for ${question.category} (${matchedConcepts.slice(0, 3).join(', ')}). Strengthen it by explaining trade-offs, risks, and how you would measure the outcome.`;
   }
   // SCENARIO E: THOROUGH / EXEMPLARY HIGH-SCORING ANSWER
   else {
     const matchBonus = Math.min(questionConceptMatches * 3, 14);
     relScore = Math.min(98, 84 + matchBonus);
-    commScore = Math.min(96, 82 + (hasStructure ? 8 : 4) + (inputMethod === 'voice' ? 3 : 0));
+    commScore = Math.min(96, 82 + (hasStructure ? 8 : 4));
     polishScore = Math.min(98, 83 + matchBonus);
     gapsScore = Math.min(94, 80 + (hasStructure ? 6 : 2));
     grade = relScore >= 92 ? 'A+' : 'A';
     hireRecommendation = relScore >= 90 ? 'Strong Hire' : 'Hire';
-    executiveSummary = `EXCEPTIONAL RESPONSE: Comprehensive, executive-level answer for ${domain.shortTitle}. You demonstrated authoritative mastery of ${question.category}, directly structured your trade-offs, and anticipated operational realities like a seasoned practitioner.`;
+    executiveSummary = `Your response covers several rubric concepts for ${domain.shortTitle} and uses a clear structure. Consider whether a real interviewer might ask for more detail about ${question.category}.`;
   }
 
   // Combined weighted score
@@ -322,7 +313,7 @@ export async function evaluateInterviewAnswer(
         : isOffTopic
         ? ['Grammatical sentence structure, but misplaced in context.']
         : [
-            inputMethod === 'voice' ? 'Spoken delivery demonstrates composure and natural cadence.' : 'Clear written articulation.',
+            inputMethod === 'voice' ? 'Voice transcription was used; this rubric evaluates the transcript.' : 'Clear written articulation.',
             hasStructure ? 'Utilized clear sequential markers to guide the evaluator.' : 'Maintained professional tone.'
           ],
       gaps: isGibberish || isOffTopic
@@ -385,15 +376,12 @@ export async function evaluateInterviewAnswer(
     }
   };
 
-  // Elevated model answer
-  const elevatedModelAnswer = `### Recommended High-Caliber Answer Structure:\n\n` +
-    `**1. Executive Overview:**\n` +
-    `"In approaching this challenge, my objective is to achieve high reliability while balancing operational complexity and cost. I frame the solution around three core tenets: architectural resilience, clear mitigation paths, and long-term preventive guardrails."\n\n` +
-    `**2. Core Technical / Strategic Implementation:**\n` +
+  // This is a general answer outline, not a generated or authoritative model answer.
+  const elevatedModelAnswer = `### Suggested Answer Outline:\n\n` +
+    `**1. Context and goal:** Briefly describe the situation, the people involved, and what a good outcome needed to achieve.\n\n` +
+    `**2. Your actions and reasoning:** Explain what you personally did, why you chose that approach, and any alternatives or constraints you considered.\n` +
     question.idealAnswerHighlights.map(h => `- ${h}`).join('\n') + `\n\n` +
-    `**3. Key Trade-offs & Gaps Addressed:**\n` +
-    `- We prioritize low latency and partition tolerance, using localized caching and asynchronous replication.\n` +
-    `- We institute synthetic monitoring alerts and automated fallbacks to ensure steady-state continuity.`;
+    `**3. Result and reflection:** Share the outcome, how you assessed it, and what you would repeat or change next time.`;
 
   return {
     questionId: question.id,
@@ -411,6 +399,8 @@ export async function evaluateInterviewAnswer(
       ? [cleanText.slice(0, Math.min(120, cleanText.length)) + '...']
       : ['Clear, straightforward initial response.'],
     criticalGaps: pillars.actionableGaps.gaps,
-    elevatedModelAnswer
+    elevatedModelAnswer,
+    rubricSatisfied: !isGibberish && !isOffTopic && questionConceptMatches >= 2 && wordCount >= 35,
+    missingConcepts: requiredConcepts.filter(concept => !matchedConcepts.includes(concept))
   };
 }

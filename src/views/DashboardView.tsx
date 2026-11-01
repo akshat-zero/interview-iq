@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { InterviewSession, PillarEvaluation } from '../types/interview';
+import { InterviewSession, PillarEvaluation, PillarKey } from '../types/interview';
 import { PillarCard } from '../components/PillarCard';
-import { RubricBadge } from '../components/RubricBadge';
+import { RubricBadge, formatPracticeSignal } from '../components/RubricBadge';
 import { TopBar, ConfidenceRail, ThinkingBlock } from '../components/LhPrimitives';
 import {
   Download,
@@ -31,12 +31,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(
     session.evaluations[0]?.questionId || null
   );
+  const evaluationSource = session.evaluationSource ?? (session.evaluations.some(evaluation => evaluation.evaluationSource === 'ai') ? 'mixed' : 'local');
 
   const handleCopySummary = () => {
-    const summaryText = `InterviewIQ Session Results:
+    const summaryText = `InterviewIQ Practice Results:
 Domain: ${session.domainTitle} (${session.roleName})
 Overall Score: ${session.overallScore}/100
-Hire Verdict: ${session.hireVerdict}
+Practice Signal: ${formatPracticeSignal(session.hireVerdict)}
 Pillars:
 - Relevance & Accuracy: ${session.averagePillarScores.relevanceAccuracy}/100
 - Communication & Delivery: ${session.averagePillarScores.communicationDelivery}/100
@@ -68,115 +69,25 @@ Questions Completed: ${session.evaluations.length}`;
     }
   };
 
-  const aggregatePillars: Record<string, PillarEvaluation> = {
-    relevanceAccuracy: {
-      key: 'relevanceAccuracy',
-      title: 'Relevance & Accuracy',
-      score: session.averagePillarScores.relevanceAccuracy,
-      verdict:
-        session.averagePillarScores.relevanceAccuracy >= 85
-          ? 'Exceptional'
-          : session.averagePillarScores.relevanceAccuracy >= 72
-          ? 'Strong'
-          : session.averagePillarScores.relevanceAccuracy >= 50
-          ? 'Adequate'
-          : 'Needs Improvement',
-      summary: 'Session average across all answered technical/behavioral prompts.',
-      strengths:
-        session.averagePillarScores.relevanceAccuracy >= 50
-          ? [
-              'Direct alignment with primary question requirements.',
-              'Demonstrated contextual comprehension without drifting off-topic.'
-            ]
-          : ['Answer submission recorded.'],
-      gaps:
-        session.averagePillarScores.relevanceAccuracy >= 50
-          ? [
-              'Include more edge cases and failure mode handling.',
-              'Support statements with quantitative metrics or benchmarks.'
-            ]
-          : [
-              'Critical failure: Response did not address the required scenario constraints.',
-              'Incorporate specific mechanisms directly requested in the prompt.'
-            ],
-      actionableTip:
-        'State a 1-sentence thesis upfront directly answering the question before elaborating.'
-    },
-    communicationDelivery: {
-      key: 'communicationDelivery',
-      title: 'Communication & Delivery',
-      score: session.averagePillarScores.communicationDelivery,
-      verdict:
-        session.averagePillarScores.communicationDelivery >= 85
-          ? 'Exceptional'
-          : session.averagePillarScores.communicationDelivery >= 72
-          ? 'Strong'
-          : session.averagePillarScores.communicationDelivery >= 50
-          ? 'Adequate'
-          : 'Needs Improvement',
-      summary: 'Evaluates executive cadence, structural framing, and conciseness.',
-      strengths: [
-        'Organized thought flow and professional presentation.',
-        'Effective use of structural markers for clarity.'
-      ],
-      gaps: [
-        'Use explicit signposting (First, Next, Finally).',
-        'Summarize with a closing sentence before concluding.'
-      ],
-      actionableTip: 'Apply the Rule of Three to keep complex answers memorable.'
-    },
-    domainPolish: {
-      key: 'domainPolish',
-      title: 'Domain-Specific Polish',
-      score: session.averagePillarScores.domainPolish,
-      verdict:
-        session.averagePillarScores.domainPolish >= 85
-          ? 'Exceptional'
-          : session.averagePillarScores.domainPolish >= 72
-          ? 'Strong'
-          : session.averagePillarScores.domainPolish >= 50
-          ? 'Adequate'
-          : 'Needs Improvement',
-      summary: 'Mastery of professional vocabulary, frameworks, and trade-offs.',
-      strengths:
-        session.averagePillarScores.domainPolish >= 50
-          ? [
-              `Command of core concepts in ${session.domainTitle}.`,
-              'Demonstrated practical industry realism.'
-            ]
-          : ['Basic vocabulary.'],
-      gaps: [
-        'Explicitly state trade-offs (e.g. latency vs consistency, cost vs velocity).',
-        'Incorporate standard industry-level design patterns.'
-      ],
-      actionableTip:
-        'Explicitly explain what you are giving up to achieve your chosen priority.'
-    },
-    actionableGaps: {
-      key: 'actionableGaps',
-      title: 'Actionable Gaps',
-      score: session.averagePillarScores.actionableGaps,
-      verdict:
-        session.averagePillarScores.actionableGaps >= 85
-          ? 'Exceptional'
-          : session.averagePillarScores.actionableGaps >= 72
-          ? 'Strong'
-          : session.averagePillarScores.actionableGaps >= 50
-          ? 'Adequate'
-          : 'Needs Improvement',
-      summary: 'Identifies unaddressed risks, omissions, and blind spots.',
-      strengths: [
-        'Identified the primary challenge accurately.',
-        'Avoided common anti-patterns.'
-      ],
-      gaps: [
-        'Always anticipate what the interviewer will drill down on next.',
-        'Ensure measurable verification criteria are mentioned.'
-      ],
-      actionableTip:
-        'Conclude answers by stating what further telemetry or steps you would explore.'
-    }
-  };
+  const pillarKeys: PillarKey[] = ['relevanceAccuracy', 'communicationDelivery', 'domainPolish', 'actionableGaps'];
+  const evaluationSourceLabel = evaluationSource === 'local'
+    ? 'local rubric'
+    : evaluationSource === 'mixed' ? 'combined AI and local feedback' : 'AI evaluation';
+  const aggregatePillars = pillarKeys.reduce((aggregate, key) => {
+    const questionPillars = session.evaluations.map(evaluation => evaluation.pillars[key]);
+    const first = questionPillars[0];
+    const score = Math.round(questionPillars.reduce((total, pillar) => total + pillar.score, 0) / Math.max(1, questionPillars.length));
+    aggregate[key] = {
+      ...first,
+      score,
+      verdict: score >= 85 ? 'Exceptional' : score >= 72 ? 'Strong' : score >= 50 ? 'Adequate' : 'Needs Improvement',
+      summary: `Average ${evaluationSourceLabel} score across ${questionPillars.length} evaluated answer${questionPillars.length === 1 ? '' : 's'}.`,
+      strengths: [...new Set(questionPillars.flatMap(pillar => pillar.strengths))].slice(0, 4),
+      gaps: [...new Set(questionPillars.flatMap(pillar => pillar.gaps))].slice(0, 4),
+      actionableTip: first?.actionableTip || 'Review the per-question AI feedback for a suggested next step.'
+    };
+    return aggregate;
+  }, {} as Record<PillarKey, PillarEvaluation>);
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-[#241910] text-[#E9DFDF] texture-plum font-sans-editorial">
@@ -223,25 +134,34 @@ Questions Completed: ${session.evaluations.length}`;
             <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-[#513A42] pb-5">
               <div>
                 <div className="font-mono text-xs uppercase tracking-widest text-[#C69BA5]">
-                  SESSION SCORECARD · {session.domainTitle.toUpperCase()} · {formatDate(session.createdAt)} · {formatTime(session.totalTimeSeconds)}
+                  PRACTICE SCORECARD · {session.domainTitle.toUpperCase()} · {formatDate(session.createdAt)} · {formatTime(session.totalTimeSeconds)}
                 </div>
                 <h2 className="mt-1 font-editorial text-3xl sm:text-4xl text-[#F4EDEF] font-bold">
                   {session.roleName} — {session.overallScore}/100
                 </h2>
               </div>
+              <span className="font-mono text-[10px] text-[#B9A5AA]">
+                {evaluationSource === 'local' ? 'Local rubric fallback' : evaluationSource === 'mixed' ? 'Mixed AI / local feedback' : 'AI practice signal'}
+              </span>
               <RubricBadge type="recommendation" value={session.hireVerdict} />
             </div>
 
             <ConfidenceRail value={session.overallScore} />
 
+            <p className="text-xs text-[#B9A5AA]">
+              {evaluationSource === 'local'
+                ? 'This session used the built-in local rubric because OpenAI API credits were unavailable. It is practice guidance, not a hiring recommendation.'
+                : 'AI-generated practice guidance can be imperfect. It is not a hiring recommendation or a verified assessment of factual accuracy or spoken delivery.'}
+            </p>
+
             <p className="font-sans-editorial text-base text-[#D5BFC3] leading-relaxed">
               {session.overallScore >= 85
-                ? `Candidate delivered an exceptional interview session for ${session.roleName}. Answers demonstrated deep conceptual command, explicit awareness of trade-offs, and crisp executive communication.`
+                ? `${evaluationSourceLabel} found several strong elements in your answers for ${session.roleName}. Review the question feedback for details and areas to develop.`
                 : session.overallScore >= 75
-                ? `Candidate demonstrated solid operational competence and domain literacy for ${session.roleName}. With minor refinement around failure modes and quantitative precision, this converts to an unambiguous Strong Hire.`
+                ? `${evaluationSourceLabel} found a solid base in your answers for ${session.roleName}. Review the question feedback for suggested next steps.`
                 : session.overallScore >= 55
-                ? `Candidate possesses foundational knowledge for ${session.roleName}. Focus on structured frameworks (STAR/MECE), native domain terminology, and addressing unstated trade-offs.`
-                : `Critical performance alert: Candidate submitted non-responsive, superficial, or off-topic responses for ${session.roleName}. Substantive domain mechanisms, architectural trade-offs, and prompt requirements were missing.`}
+                ? `Your responses may benefit from clearer structure and more specific examples. Use the per-question feedback as a practice guide.`
+                : `${evaluationSourceLabel} found areas that could use more detail. Revisit the prompts and try adding specific actions, reasoning, and outcomes.`}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
@@ -363,7 +283,7 @@ Questions Completed: ${session.evaluations.length}`;
                         <div className="rounded-xl border border-[#754653]/60 bg-[#3B2931] p-5 shadow-md">
                           <div className="font-mono text-xs uppercase tracking-wider text-[#C69BA5] mb-2 font-semibold flex items-center gap-2">
                             <span>✦</span>
-                            <span>Reference Model Answer (98/100)</span>
+                            <span>Reference answer outline</span>
                           </div>
                           <div className="font-sans-editorial text-sm text-[#F4EDEF] whitespace-pre-wrap leading-relaxed">
                             {evaluation.elevatedModelAnswer}

@@ -1,11 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  DomainId,
-  DifficultyLevel,
-  InterviewLength,
-  InterviewSession,
-  UserProfile,
-} from '../types/interview';
+import { DomainId, InterviewSession, UserProfile } from '../types/interview';
 import { DOMAINS } from '../data/domains';
 import { LhMark, BrailleSpinner, timeAgo } from './LhPrimitives';
 import {
@@ -28,9 +22,7 @@ export interface NavbarProps {
   onOpenStudy: () => void;
   onQuickStartRole?: (
     domainId: DomainId,
-    roleId: string,
-    difficulty: DifficultyLevel,
-    length: InterviewLength
+    roleId: string
   ) => void;
   onSelectSession?: (session: InterviewSession) => void;
   savedSessions?: InterviewSession[];
@@ -38,7 +30,7 @@ export interface NavbarProps {
   activeRoleId?: string;
   currentSessionId?: string;
   historyCount: number;
-  currentView: 'landing' | 'interview' | 'dashboard' | 'study';
+  currentView: 'landing' | 'interview' | 'walking' | 'dashboard' | 'study';
   currentUser: UserProfile;
 }
 
@@ -250,7 +242,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   if (track.kind === 'practice' && kindFilter === 'practice') {
                     onOpenStudy();
                   } else if (onQuickStartRole) {
-                    onQuickStartRole(track.domainId, track.roleId, 'senior', 3);
+                    onQuickStartRole(track.domainId, track.roleId);
                   }
                 }}
                 className={`relative mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors border ${

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserProfile } from '../types/interview';
 import { LhMark, BrailleSpinner } from '../components/LhPrimitives';
 import { Check } from 'lucide-react';
@@ -25,6 +25,86 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
 
   // Optional account linking checkbox
   const [linkBoth, setLinkBoth] = useState(true);
+  const [chatGptEnabled, setChatGptEnabled] = useState(false);
+  const [chatGptConnected, setChatGptConnected] = useState(false);
+  const [chatGptName, setChatGptName] = useState('');
+  const [chatGptEmail, setChatGptEmail] = useState('');
+  const [chatGptModels, setChatGptModels] = useState<{ id: string; name: string }[]>([]);
+  const [chatGptModel, setChatGptModel] = useState('');
+  const [chatGptLoading, setChatGptLoading] = useState(false);
+  const [chatGptError, setChatGptError] = useState('');
+
+  useEffect(() => {
+    const loadChatGptAccount = async () => {
+      try {
+        const statusResponse = await fetch('/api/chatgpt/status');
+        const status = await statusResponse.json();
+        setChatGptEnabled(Boolean(status.enabled));
+        setChatGptConnected(Boolean(status.connected));
+        setChatGptName(status.name || '');
+        setChatGptEmail(status.email || '');
+        setChatGptModel(status.model || '');
+        if (status.connected) {
+          const modelsResponse = await fetch('/api/chatgpt/models');
+          const modelsPayload = await modelsResponse.json();
+          if (!modelsResponse.ok) throw new Error(modelsPayload.error || 'Could not load ChatGPT models.');
+          setChatGptModels(modelsPayload.models || []);
+        }
+      } catch {
+        setChatGptError('Could not check ChatGPT sign-in. Make sure the local Node server is running.');
+      }
+    };
+    void loadChatGptAccount();
+    const result = new URLSearchParams(window.location.search).get('chatgpt_signin');
+    if (result) {
+      window.history.replaceState({}, '', window.location.pathname);
+      if (result === 'failed') setChatGptError('ChatGPT sign-in could not be completed. Please try again.');
+      if (result === 'cancelled') setChatGptError('ChatGPT sign-in was cancelled.');
+    }
+  }, []);
+
+  const handleChatGptLogin = async () => {
+    setChatGptLoading(true);
+    setChatGptError('');
+    try {
+      const response = await fetch('/api/chatgpt/start', { method: 'POST' });
+      const result = await response.json();
+      if (!response.ok || typeof result.url !== 'string') throw new Error(result.error || 'ChatGPT sign-in is unavailable.');
+      window.location.assign(result.url);
+    } catch (error) {
+      setChatGptError(error instanceof Error ? error.message : 'Could not start ChatGPT sign-in.');
+      setChatGptLoading(false);
+    }
+  };
+
+  const handleChatGptModelChange = async (model: string) => {
+    setChatGptModel(model);
+    setChatGptError('');
+    if (!model) return;
+    try {
+      const response = await fetch('/api/chatgpt/model', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not select this model.');
+    } catch (error) {
+      setChatGptError(error instanceof Error ? error.message : 'Could not select this model.');
+    }
+  };
+
+  const continueWithChatGpt = () => {
+    if (!chatGptEmail || !chatGptModel) return;
+    onLoginSuccess({
+      id: `usr_chatgpt_${btoa(chatGptEmail).slice(0, 10)}`,
+      name: chatGptName || chatGptEmail.split('@')[0] || 'ChatGPT user',
+      email: chatGptEmail,
+      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(chatGptEmail)}&backgroundColor=1c1c1c`,
+      primaryProvider: 'chatgpt',
+      isGoogleLinked: false,
+      isPhoneLinked: false,
+      createdAt: new Date().toISOString()
+    });
+  };
 
   const handleGoogleLogin = () => {
     setIsGoogleLoading(true);
@@ -109,11 +189,35 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
             <span className="font-mono text-[10px] uppercase tracking-wider text-[#C69BA5]">
               INTERVIEW HARNESS
             </span>
-          <h1 className="font-editorial text-2xl text-[#F4EDEF] font-bold">Sign in to continue</h1>
+          <h1 className="font-editorial text-2xl text-[#F4EDEF] font-bold">Sign in to InterviewIQ</h1>
           <p className="font-sans-editorial text-sm text-[#D5BFC3]">
-            Local-first session history, 4-pillar rubrics, and knowledge graph.
+            ChatGPT sign-in connects your account for AI interview questions, follow-ups and feedback. Demo profiles stay in this browser.
           </p>
         </div>
+
+        {chatGptEnabled && (
+          <div className="mb-5 space-y-3">
+            {chatGptConnected ? (
+              <div className="space-y-3 rounded-xl border border-[#513A42] bg-[#302329] p-3">
+                <div className="text-sm text-[#F4EDEF]">Signed in with ChatGPT{chatGptEmail ? ` · ${chatGptEmail}` : ''}</div>
+                <label className="block font-mono text-xs uppercase tracking-wide text-[#C69BA5]" htmlFor="chatgpt-model">ChatGPT plan model</label>
+                <select id="chatgpt-model" value={chatGptModel} onChange={event => void handleChatGptModelChange(event.target.value)} className="w-full rounded-lg border border-[#513A42] bg-[#241910] px-3 py-2 text-sm text-[#F4EDEF]">
+                  <option value="">Choose a model</option>
+                  {chatGptModels.map(model => <option key={model.id} value={model.id}>{model.name}</option>)}
+                </select>
+                <button type="button" onClick={continueWithChatGpt} disabled={!chatGptModel} className="w-full rounded-xl border border-[#C69BA5]/60 bg-[#754653] py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] disabled:cursor-not-allowed disabled:opacity-50">
+                  Continue with ChatGPT
+                </button>
+              </div>
+            ) : (
+              <button type="button" data-oai-siwc-button onClick={() => void handleChatGptLogin()} disabled={chatGptLoading} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#C69BA5]/60 bg-[#754653] font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910] disabled:opacity-60">
+                {chatGptLoading ? <BrailleSpinner className="h-3 w-auto text-[#C69BA5]" /> : null}
+                <span>{chatGptLoading ? 'Connecting…' : 'Continue with ChatGPT'}</span>
+              </button>
+            )}
+            {chatGptError && <p role="alert" className="text-xs text-[#F3A7A7]">{chatGptError}</p>}
+          </div>
+        )}
 
         {/* Segmented Auth Switcher */}
         <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg border border-[#513A42] bg-[#302329] p-1 font-mono text-xs">
@@ -129,7 +233,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
                 : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
             }`}
           >
-            GOOGLE
+            EMAIL DEMO
           </button>
           <button
             type="button"
@@ -140,7 +244,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
                 : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
             }`}
           >
-            PHONE
+            PHONE DEMO
           </button>
         </div>
 
@@ -219,7 +323,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
                   <span>Signing in...</span>
                 </>
               ) : (
-                <span>Continue with Google →</span>
+                <span>Continue with demo profile →</span>
               )}
             </button>
           </div>
@@ -262,13 +366,13 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
                   className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-[#C69BA5]/60 bg-[#754653] font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910] transition-all shadow-md shadow-[#482832]/50"
                 >
                   {isPhoneLoading ? <BrailleSpinner className="h-3 w-auto text-[#C69BA5]" /> : null}
-                  <span>Send verification code →</span>
+                  <span>Continue to demo code →</span>
                 </button>
               </form>
             ) : (
               <form onSubmit={handleVerifyOtp} className="space-y-3">
                 <div className="rounded-xl border border-[#513A42] bg-[#302329] p-3 text-center font-mono text-xs text-[#D5BFC3]">
-                  Code sent to <span className="text-[#F4EDEF] font-bold">{countryCode} {phoneNumber}</span>
+                  Demo code step for <span className="text-[#F4EDEF] font-bold">{countryCode} {phoneNumber}</span>. No SMS was sent.
                 </div>
                 <input
                   type="text"
@@ -290,7 +394,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
                     disabled={isPhoneLoading}
                     className="w-2/3 rounded-lg border border-[#C69BA5]/60 bg-[#754653] py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#F4EDEF] hover:bg-[#C6A0A7] hover:text-[#241910]"
                   >
-                    Verify
+                    Continue
                   </button>
                 </div>
               </form>

@@ -22,6 +22,8 @@ export const QuestionFeedbackModal: React.FC<QuestionFeedbackModalProps> = ({
   onFinishSession,
   isLastQuestion,
 }) => {
+  const isLocalEvaluation = evaluation.evaluationSource !== 'ai';
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#241910]/85 p-4 backdrop-blur-sm">
       <div className="settings-dialog-pop my-8 w-full max-w-4xl rounded-2xl border border-[#513A42] bg-[#44323A] p-6 text-[#E9DFDF] shadow-2xl shadow-[#482832]/60">
@@ -33,6 +35,9 @@ export const QuestionFeedbackModal: React.FC<QuestionFeedbackModalProps> = ({
             </span>
             <span>·</span>
             <span>{evaluation.category}</span>
+            <span className="font-mono text-[10px] text-[#B9A5AA]">
+              {isLocalEvaluation ? 'Local rubric fallback' : 'AI practice evaluation'}
+            </span>
             <RubricBadge type="recommendation" value={evaluation.hireRecommendation} />
           </div>
 
@@ -43,6 +48,12 @@ export const QuestionFeedbackModal: React.FC<QuestionFeedbackModalProps> = ({
             <RubricBadge type="grade" value={evaluation.grade} />
           </div>
         </div>
+
+        <p className="mb-3 rounded-md border border-[#513A42] bg-[#302329] px-3 py-2 text-xs text-[#B9A5AA]">
+          {isLocalEvaluation
+            ? 'This answer was checked with the built-in local rubric because OpenAI API credits were unavailable. Voice answers are assessed from their transcript; spoken cadence is not evaluated.'
+            : 'AI-generated practice feedback can be imperfect and is not a hiring recommendation. Voice answers are assessed from their transcript; spoken cadence is not evaluated.'}
+        </p>
 
         {/* Confidence Rail Readout */}
         <div className="mb-4 flex items-center gap-3">

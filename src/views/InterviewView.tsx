@@ -7,19 +7,18 @@ import {
   InterviewSession,
   PillarKey
 } from '../types/interview';
+import { AIServiceError, evaluateAnswerWithAI, requestCrossQuestionDecision } from '../services/aiInterviewService';
 import { evaluateInterviewAnswer } from '../services/evaluationEngine';
 import { useAudioRecorder } from '../hooks/useAudioRecorder';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 import { AudioVisualizer } from '../components/AudioVisualizer';
 import { EvaluationLoadingOverlay } from '../components/EvaluationLoadingOverlay';
 import { QuestionFeedbackModal } from '../components/QuestionFeedbackModal';
+import { VideoCoachPanel } from '../components/VideoCoachPanel';
 import {
   TopBar,
   ConfidenceRail,
-  ThinkingBlock,
-  CONFIDENCE_STOPS,
-  CONFIDENCE_COLORS,
-  confidenceRailStyle
+  ThinkingBlock
 } from '../components/LhPrimitives';
 import {
   Mic,
@@ -35,6 +34,10 @@ interface InterviewViewProps {
   roleId: string;
   difficulty: DifficultyLevel;
   questions: InterviewQuestion[];
+  fallbackQuestions: InterviewQuestion[];
+  initialLocalFallback?: boolean;
+  initialFallbackNotice?: string;
+  onLocalFallbackActivated?: (questions: InterviewQuestion[]) => void;
   onFinishInterview: (session: InterviewSession) => void;
   onExitToHome: () => void;
   sidebarOpen?: boolean;
@@ -46,18 +49,32 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
   roleId,
   difficulty,
   questions,
+  fallbackQuestions,
+  initialLocalFallback = false,
+  initialFallbackNotice = '',
+  onLocalFallbackActivated,
   onFinishInterview,
   sidebarOpen = true,
   onToggleSidebar
 }) => {
+  const [sessionQuestions, setSessionQuestions] = useState(questions);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentQuestion = questions[currentIndex] || questions[0];
+  const baseQuestion = sessionQuestions[currentIndex] || sessionQuestions[0];
+  const [followUpPrompt, setFollowUpPrompt] = useState('');
+  const [followUpCount, setFollowUpCount] = useState(0);
+  const [cumulativeAnswer, setCumulativeAnswer] = useState('');
+  const [followUpReason, setFollowUpReason] = useState('');
+  const [followUpSource, setFollowUpSource] = useState<'ai' | 'local'>('ai');
+  const [isLocalFallback, setIsLocalFallback] = useState(initialLocalFallback);
+  const [localFallbackNotice, setLocalFallbackNotice] = useState(initialFallbackNotice);
+  const currentQuestion = followUpPrompt
+    ? { ...baseQuestion, prompt: followUpPrompt, contextNotes: 'Follow-up on your previous answer. Keep building on the same main question.' }
+    : baseQuestion;
 
   // User Answer state
   const [userAnswer, setUserAnswer] = useState('');
   const [inputMode, setInputMode] = useState<'voice' | 'text'>('text');
   const [showHints, setShowHints] = useState(false);
-  const [confidenceIndex, setConfidenceIndex] = useState<number>(2); // 50% default
 
   // Timing
   const [questionSeconds, setQuestionSeconds] = useState(0);
@@ -71,6 +88,7 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
   // Loading state
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationStep, setEvaluationStep] = useState('');
+  const [serviceError, setServiceError] = useState('');
 
   // Audio Playback state for recorded answer
   const [isPlayingRecordedAudio, setIsPlayingRecordedAudio] = useState(false);
@@ -92,6 +110,21 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
   const { speak, stop: stopSpeaking, isSpeaking, isSupported: isTtsSupported } = useSpeechSynthesis();
 
   const currentRole = domain.roles.find(r => r.id === roleId) || domain.roles[0];
+
+  const activateLocalFallback = () => {
+    setIsLocalFallback(true);
+    const questionsSoFar = sessionQuestions.slice(0, currentIndex + 1);
+    const alreadyAsked = new Set(questionsSoFar.map(question => question.prompt.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()));
+    const remainingCount = Math.max(0, sessionQuestions.length - questionsSoFar.length);
+    const localQuestions = fallbackQuestions
+      .filter(question => !alreadyAsked.has(question.prompt.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()))
+      .slice(0, remainingCount);
+    setSessionQuestions([...questionsSoFar, ...localQuestions]);
+    onLocalFallbackActivated?.(localQuestions);
+    setLocalFallbackNotice(
+      `OpenAI API credits ran out during this interview. The local practice rubric will handle follow-ups and evaluations, and remaining main questions will come from the built-in bank${localQuestions.length < remainingCount ? ` (${localQuestions.length} role-specific questions available)` : ''}.`
+    );
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -142,64 +175,115 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
     }
   };
 
-  const handleLoadSample = (type: 'strong' | 'developing' | 'irrelevant') => {
-    if (type === 'strong') {
-      setConfidenceIndex(4);
-      if (domain.id === 'swe') {
-        setUserAnswer(
-          `To design a globally distributed rate limiter at 500k RPS, I recommend a tiered token-bucket architecture. First, we deploy regional Redis clusters fronted by local in-memory token caches on edge application instances to minimize cross-region latency. Second, we use an asynchronous lease allocation mechanism where local instances batch-request tokens from Redis every 500ms rather than on every hit, keeping p99 latency under 2ms. Third, for partition tolerance during network partitions, we define an explicit policy: critical security authentication endpoints fail-closed, while public browsing and analytics APIs fail-open to protect availability. Finally, we mitigate clock drift by relying on monotonic time offsets and distributed telemetry canaries.`
-        );
-      } else if (domain.id === 'management') {
-        setUserAnswer(
-          `When faced with a mandatory 20% budget reduction without compromising our flagship strategic launch, I approach the decision through a Zero-Based Prioritization framework. First, I delineate "Core" differentiators directly tied to revenue and customer retention from "Context" support operational expenses. Second, we immediately audit non-headcount spend—consolidating redundant SaaS tools and renegotiating contractor contracts, which typically captures 8-12% in cost savings. Third, rather than executing indiscriminate peanut-butter cuts that damage morale, I reassign high-capacity contributors from speculative exploratory projects directly to the flagship launch team. Finally, I communicate the rationale to the entire organization with radical transparency, explaining the macro drivers and the objective evaluation matrix used to ensure psychological safety.`
-        );
-      } else if (domain.id === 'arts_vocal') {
-        setUserAnswer(
-          `Navigating the primo and secondo passaggio in high-demand repertoire requires coordinating breath pressure, acoustic vowel modification, and balanced laryngeal mechanics. First, I maintain stable appoggio breath support through dynamic intercostal expansion and abdominal wall engagement, resisting the temptation to push excessive subglottic air pressure. Second, as I approach the upper pass, I allow natural thyroid cartilage tilt to engage cricothyroid dominance without depressing the tongue root. Third, I utilize aggiustamento—narrowing open vowels slightly toward an open /o/—to align acoustic formant resonances with the harmonic partials. This achieves squillo and singer’s formant cut over the orchestra without risking vocal fold hyperfunction.`
-        );
-      } else {
-        setUserAnswer(
-          `To address the divergence where DAU grew 40% but 90-day retention dropped 18%, I first perform a granular cohort decomposition. I segment users by acquisition channel and time-to-first-activation to separate vanity traffic from high-intent retention. Second, I audit the user onboarding funnel to pinpoint where drop-off occurs before reaching our core "Aha!" moment. Third, I formulate a targeted hypothesis to improve activation by deploying in-app guided workflows and personalized workspace setup. We will run an A/B experiment measuring 30-day repeat usage as our primary metric with churn as our guardrail.`
-        );
-      }
-    } else if (type === 'developing') {
-      setConfidenceIndex(1);
-      setUserAnswer(
-        `I would probably just tell the team to work faster and maybe hire more people or use standard tools. If there is a problem, we can restart the servers or just see what happens next week. We should also have a meeting to discuss it with everyone.`
-      );
-    } else {
-      setConfidenceIndex(0);
-      setUserAnswer(
-        `Yesterday afternoon I went down to the local supermarket and bought twenty yellow bananas, ten green apples, and a large box of chocolate chip cookies. Then my neighbor's cat jumped over the fence and started chasing a blue butterfly across the front lawn.`
-      );
-    }
-  };
-
   const handleSubmit = async () => {
     if (!userAnswer.trim()) return;
 
     stopRecording();
     stopSpeaking();
     setIsEvaluating(true);
+    setServiceError('');
 
     try {
-      const evaluation = await evaluateInterviewAnswer(
-        {
-          question: currentQuestion,
-          userAnswer,
+      const combinedAnswer = cumulativeAnswer
+        ? `${cumulativeAnswer}\n\nFollow-up ${followUpCount}: ${userAnswer.trim()}`
+        : `Answer: ${userAnswer.trim()}`;
+      const evaluateLocally = async () => {
+        const localEvaluation = await evaluateInterviewAnswer({
+          question: baseQuestion,
+          userAnswer: combinedAnswer,
           timeSpentSeconds: questionSeconds,
           inputMethod: inputMode,
           domain
-        },
-        (step) => setEvaluationStep(step)
-      );
+        });
+        return { ...localEvaluation, evaluationSource: 'local' as const };
+      };
 
+      let useLocalRubric = isLocalFallback;
+      let aiDecision: Awaited<ReturnType<typeof requestCrossQuestionDecision>> | null = null;
+      let evaluation: QuestionEvaluation | null = null;
+      if (!useLocalRubric) {
+        setEvaluationStep('Asking the AI interviewer whether a follow-up is needed...');
+        try {
+          aiDecision = await requestCrossQuestionDecision({
+            question: baseQuestion.prompt,
+            answer: combinedAnswer,
+            domain: domain.title,
+            role: currentRole.name,
+            difficulty
+          });
+        } catch (error) {
+          if (!(error instanceof AIServiceError) || error.code !== 'AI_CREDITS') throw error;
+          useLocalRubric = true;
+          activateLocalFallback();
+        }
+      }
+
+      let needsFollowUp: boolean;
+      if (useLocalRubric) {
+        setEvaluationStep('Checking your answer with the built-in practice rubric...');
+        evaluation = await evaluateLocally();
+        needsFollowUp = !evaluation.rubricSatisfied;
+      } else if (aiDecision && !aiDecision.satisfied) {
+        needsFollowUp = true;
+      } else {
+        setEvaluationStep('Generating your AI evaluation and feedback...');
+        try {
+          evaluation = await evaluateAnswerWithAI({
+            question: baseQuestion,
+            answer: combinedAnswer,
+            domain: domain.title,
+            role: currentRole.name,
+            difficulty,
+            inputMethod: inputMode,
+            timeSpentSeconds: questionSeconds
+          });
+          needsFollowUp = false;
+        } catch (error) {
+          if (!(error instanceof AIServiceError) || error.code !== 'AI_CREDITS') throw error;
+          useLocalRubric = true;
+          activateLocalFallback();
+          setEvaluationStep('Checking your answer with the built-in practice rubric...');
+          evaluation = await evaluateLocally();
+          needsFollowUp = !evaluation.rubricSatisfied;
+        }
+      }
+
+      if (needsFollowUp) {
+        const nextFollowUp = followUpCount + 1;
+        const concepts = (evaluation?.missingConcepts || []).slice(0, 2);
+        const localPrompt = evaluation?.executiveSummary.toLowerCase().includes('too short or repetitive')
+          ? 'Please expand your answer with a specific example. What did you do, why did you choose that approach, and what happened?'
+          : evaluation?.executiveSummary.toLowerCase().includes('did not include terms')
+            ? `Please answer the original question directly: ${baseQuestion.prompt}`
+            : concepts.length
+              ? `You have not yet covered ${concepts.join(' and ')}. How do these affect your approach to the original question?`
+              : 'Can you add a concrete example, explain your reasoning, and describe the outcome?';
+        const nextPrompt = useLocalRubric ? localPrompt : aiDecision?.followUp.trim();
+        if (!nextPrompt) throw new Error('The interviewer could not provide a follow-up. Please submit your answer again.');
+
+        setCumulativeAnswer(combinedAnswer);
+        setFollowUpCount(nextFollowUp);
+        setFollowUpPrompt(nextPrompt);
+        setFollowUpSource(useLocalRubric ? 'local' : 'ai');
+        setFollowUpReason(useLocalRubric
+          ? 'The local practice rubric needs more relevant detail.'
+          : aiDecision?.reason || 'The answer needs more detail.');
+        setUserAnswer('');
+        resetRecording();
+        setIsEvaluating(false);
+        setTimeout(() => transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
+        return;
+      }
+
+      if (!evaluation) throw new Error('The interview could not evaluate this answer. Please submit it again.');
+      setCumulativeAnswer(combinedAnswer);
       setCurrentEvaluation(evaluation);
       setEvaluations(prev => [...prev, evaluation]);
       setIsEvaluating(false);
       setShowFeedbackModal(true);
     } catch (err) {
       console.error('Evaluation error:', err);
+      setServiceError(err instanceof Error ? err.message : 'The AI service is unavailable. Your answer is still here; please retry.');
       setIsEvaluating(false);
     }
   };
@@ -207,14 +291,19 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
   const handleNextQuestion = () => {
     setShowFeedbackModal(false);
     setCurrentEvaluation(null);
+    setFollowUpPrompt('');
+    setFollowUpCount(0);
+    setFollowUpSource('ai');
+    setCumulativeAnswer('');
+    setFollowUpReason('');
+    setServiceError('');
     setUserAnswer('');
     resetRecording();
     setQuestionSeconds(0);
     setShowHints(false);
-    setConfidenceIndex(2);
     setIsPlayingRecordedAudio(false);
 
-    if (currentIndex + 1 < questions.length) {
+    if (currentIndex + 1 < sessionQuestions.length) {
       setCurrentIndex(prev => prev + 1);
       setTimeout(() => {
         transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -264,25 +353,20 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
       domainTitle: domain.title,
       roleName: currentRole.name,
       difficulty,
-      questions,
+      questions: sessionQuestions,
       evaluations: allEvals,
+      evaluationSource: allEvals.every(evaluation => evaluation.evaluationSource === 'ai')
+        ? 'ai'
+        : allEvals.every(evaluation => evaluation.evaluationSource !== 'ai') ? 'local' : 'mixed',
       overallScore: avgScore,
       averagePillarScores,
       hireVerdict,
-      keyStrengths: avgScore >= 65 ? [
-        'Demonstrated contextual awareness of the operational problem space.',
-        'Structured thought progression and professional tone.',
-        'Practical alignment with domain constraints.'
-      ] : [
-        'Answer was submitted and processed against the 4-pillar rubric.'
-      ],
-      criticalImprovements: avgScore < 60 ? [
-        'Ensure answers directly resolve the prompt requirements without introducing off-topic subjects.',
-        'Incorporate standard domain terminology and architectural frameworks.'
-      ] : [
-        'Explore edge-case recovery and failure modes in greater detail.',
-        'Explicitly state quantitative business or technical metrics for success verification.'
-      ],
+      keyStrengths: [...new Set(allEvals.flatMap(evaluation =>
+        Object.values(evaluation.pillars).flatMap(pillar => pillar.strengths)
+      ))].slice(0, 4),
+      criticalImprovements: [...new Set(allEvals.flatMap(evaluation =>
+        Object.values(evaluation.pillars).flatMap(pillar => pillar.gaps)
+      ))].slice(0, 4),
       totalTimeSeconds: totalSeconds
     };
 
@@ -296,9 +380,6 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
   };
 
   const wordCount = userAnswer.trim() ? userAnswer.trim().split(/\s+/).length : 0;
-  const activeConfidencePct = CONFIDENCE_STOPS[confidenceIndex] ?? 50;
-  const activeConfidenceColor = CONFIDENCE_COLORS[confidenceIndex] ?? CONFIDENCE_COLORS[2];
-
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-[#241910] text-[#E9DFDF] texture-plum font-sans-editorial">
       {isEvaluating && <EvaluationLoadingOverlay currentStepText={evaluationStep} />}
@@ -316,13 +397,13 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
         <QuestionFeedbackModal
           evaluation={currentEvaluation}
           questionNumber={currentIndex + 1}
-          totalQuestions={questions.length}
+          totalQuestions={sessionQuestions.length}
           onNextQuestion={handleNextQuestion}
           onFinishSession={() => {
             setShowFeedbackModal(false);
             finishEntireSession(evaluations);
           }}
-          isLastQuestion={currentIndex + 1 === questions.length}
+          isLastQuestion={currentIndex + 1 === sessionQuestions.length}
         />
       )}
 
@@ -352,7 +433,7 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
               {showHints ? 'Hide hints' : 'Hints'}
             </button>
             <span className="rounded border border-[#513A42] bg-[#3B2931] px-2.5 py-1 text-xs tabular-nums text-[#F4EDEF]">
-              {currentIndex + 1} / {questions.length}
+              {currentIndex + 1} / {sessionQuestions.length}
             </span>
           </div>
         }
@@ -398,13 +479,29 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
 
           {/* Active Question Prose */}
           <div className="space-y-4" ref={transcriptEndRef}>
+            {isLocalFallback && (
+              <div role="status" className="rounded-lg border border-amber-400/30 bg-amber-950/20 px-3.5 py-2.5 text-sm text-amber-100">
+                <span className="font-mono text-[11px] uppercase tracking-wider">Local fallback active</span>
+                <p className="mt-1">{localFallbackNotice || 'Using the built-in question bank and practice rubric because OpenAI API credits are unavailable.'}</p>
+              </div>
+            )}
             <div className="font-editorial text-2xl sm:text-3xl text-[#F4EDEF] tracking-tight leading-snug">
-              <p>{currentQuestion.prompt}</p>
+              <p>{baseQuestion.prompt}</p>
             </div>
 
+            {followUpPrompt && (
+              <div className="rounded-lg border border-[#C69BA5]/40 bg-[#3B2931]/50 px-3.5 py-2.5 text-sm text-[#D5BFC3] font-sans-editorial">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-[#C69BA5]">{followUpSource === 'ai' ? 'AI interviewer' : 'Local rubric'} · Follow-up {followUpCount}</span>
+                <p className="mt-1 text-[#F4EDEF]">{followUpPrompt}</p>
+                <p className="mt-2 text-xs">{followUpReason} Your answers are combined; the next main question appears when the answer is judged sufficient.</p>
+              </div>
+            )}
+
             <p className="font-sans-editorial text-sm sm:text-base text-[#D5BFC3] leading-relaxed">
-              {currentQuestion.contextNotes}
+              {baseQuestion.contextNotes}
             </p>
+
+            <VideoCoachPanel paused={showFeedbackModal || isEvaluating} />
 
             {showHints && (
               <div className="rounded-xl border border-[#513A42] bg-[#302329] p-4 space-y-2 text-sm text-[#D5BFC3] font-sans-editorial shadow-inner">
@@ -434,81 +531,12 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
       <div className="shrink-0 bg-gradient-to-t from-[#241910] via-[#241910]/95 to-transparent pb-4 pt-2">
         <div className="mx-auto w-full max-w-[48rem] px-4">
           <div className="overflow-hidden rounded-2xl border border-[#513A42] bg-[#302329] shadow-2xl shadow-[#241910]/90">
-            {/* Subtle top bar inside dock: Probe label + 1-click sample fillers */}
-            <div className="flex items-center justify-between px-4 py-2.5 text-xs font-mono text-[#D5BFC3] bg-[#3B2931]/70 border-b border-[#513A42]">
+            {/* Current prompt label */}
+            <div className="px-4 py-2.5 text-xs font-mono text-[#D5BFC3] bg-[#3B2931]/70 border-b border-[#513A42]">
               <span className="uppercase tracking-wider text-[#C69BA5] font-semibold flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#C69BA5]" />
                 Probe · {currentQuestion.category}
               </span>
-              <div className="flex items-center gap-2 text-[11px]">
-                <span className="text-[#B9A5AA]">Sample fill:</span>
-                <button
-                  type="button"
-                  onClick={() => handleLoadSample('strong')}
-                  className="rounded border border-[#754653] bg-[#754653]/30 px-2 py-0.5 text-[#F4EDEF] transition-colors hover:bg-[#754653] hover:text-[#F4EDEF]"
-                  title="Fill 98/100 exemplar answer"
-                >
-                  Exemplar (98)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleLoadSample('developing')}
-                  className="rounded border border-[#513A42] bg-[#482832]/50 px-2 py-0.5 text-[#D5BFC3] transition-colors hover:bg-[#482832] hover:text-[#F4EDEF]"
-                  title="Fill developing sample answer"
-                >
-                  Developing
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleLoadSample('irrelevant')}
-                  className="rounded border border-[#513A42] bg-[#241910] px-2 py-0.5 text-[#B9A5AA] transition-colors hover:bg-[#3B2931] hover:text-[#D5BFC3]"
-                  title="Fill off-topic answer"
-                >
-                  Off-topic
-                </button>
-              </div>
-            </div>
-
-            {/* Confidence Slider Row */}
-            <div className="border-b border-[#513A42] bg-[#302329] px-4 py-2.5">
-              <div className="flex items-center gap-3">
-                <span className="shrink-0 font-mono text-xs font-semibold uppercase tracking-wider text-[#B18A91]">
-                  Confidence
-                </span>
-                <div className="relative h-4 min-w-0 flex-1">
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute top-1/2 left-2 right-2 h-1.5 -translate-y-1/2 rounded-full border border-[#513A42]"
-                    style={confidenceRailStyle(activeConfidencePct)}
-                  />
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={activeConfidencePct}
-                    onChange={(e) => {
-                      const v = Number(e.target.value);
-                      let best = 0;
-                      for (let i = 1; i < CONFIDENCE_STOPS.length; i++) {
-                        if (
-                          Math.abs(CONFIDENCE_STOPS[i] - v) <
-                          Math.abs(CONFIDENCE_STOPS[best] - v)
-                        ) {
-                          best = i;
-                        }
-                      }
-                      setConfidenceIndex(best);
-                    }}
-                    style={{ color: activeConfidenceColor }}
-                    aria-label="Confidence"
-                    className="absolute inset-0 h-4 w-full cursor-pointer appearance-none bg-transparent outline-none [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-current [&::-moz-range-track]:h-4 [&::-moz-range-track]:bg-transparent [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-current"
-                  />
-                </div>
-                <span className="w-10 shrink-0 text-right font-mono text-xs font-semibold tabular-nums text-[#F4EDEF]">
-                  {activeConfidencePct}%
-                </span>
-              </div>
             </div>
 
             {/* YOUR THINKING Field */}
@@ -519,6 +547,11 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
                 handleSubmit();
               }}
             >
+              {serviceError && (
+                <p role="alert" className="mb-2 rounded-lg border border-red-400/30 bg-red-950/20 px-3 py-2 text-sm text-red-200">
+                  {serviceError} Your answer is still here. You can retry when the AI service is available.
+                </p>
+              )}
               <div className="rounded-xl border border-[#513A42] bg-[#241910] transition-colors focus-within:border-[#C69BA5] shadow-inner">
                 <div className="flex items-center justify-between px-3 pt-2.5">
                   <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#C69BA5]">
@@ -538,7 +571,10 @@ export const InterviewView: React.FC<InterviewViewProps> = ({
 
                 <textarea
                   value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
+                  onChange={(e) => {
+                    setUserAnswer(e.target.value);
+                    setServiceError('');
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && (!e.shiftKey || e.metaKey || e.ctrlKey)) {
                       e.preventDefault();

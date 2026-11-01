@@ -1,6 +1,5 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { ConfidenceRail } from './LhPrimitives';
 
 interface RubricExplainerModalProps {
   isOpen: boolean;
@@ -10,32 +9,28 @@ interface RubricExplainerModalProps {
 const PILLARS = [
   {
     title: 'Relevance & Accuracy',
-    weight: 35,
-    subtitle: 'Semantic precision & technical truth',
+    subtitle: 'Relevance and sound reasoning',
     description:
       'Evaluates whether you directly resolved the core challenge posed without digressing or rambling. Off-topic responses receive severe penalties.',
-    rule: 'Direct problem resolution under explicit scenario constraints.',
+    rule: 'Connect your answer to the question and explain your reasoning.',
   },
   {
     title: 'Communication & Delivery',
-    weight: 25,
-    subtitle: 'Structure, conciseness & composure',
+    subtitle: 'Clarity and organization',
     description:
-      'Assesses verbal cadence, structural frameworks (STAR, MECE, top-down synthesis), and executive clarity under pressure.',
-    rule: 'Clear signposting (First, Second, Trade-offs) and thesis-first synthesis.',
+      'Considers whether your answer is understandable, organized, and appropriately concise.',
+    rule: 'Use examples or signposting when they make your explanation easier to follow.',
   },
   {
     title: 'Domain-Specific Polish',
-    weight: 25,
-    subtitle: 'Industry lexicon & trade-off mastery',
+    subtitle: 'Role-specific knowledge',
     description:
       'Measures fluency in authentic professional terminology (e.g. idempotency, p99 latency, zero-based budgeting, appoggio acoustics).',
     rule: 'Explicit trade-off justifications over generic buzzwords.',
   },
   {
     title: 'Actionable Gaps',
-    weight: 15,
-    subtitle: 'Edge cases, failure modes & blind spots',
+    subtitle: 'Completeness and risks',
     description:
       'Audits what you overlooked: failure modes, partition recovery, human burnout, or vocal fatigue.',
     rule: 'Proactively anticipating interviewer follow-up drills.',
@@ -52,7 +47,7 @@ export const RubricExplainerModal: React.FC<RubricExplainerModalProps> = ({ isOp
         <div className="mb-5 flex items-center justify-between border-b border-[#513A42] pb-3">
           <div>
             <div className="font-ui text-xs uppercase tracking-wider text-[#C69BA5]">
-              Evaluation Engine Specification
+              AI Feedback Guide
             </div>
             <h2 className="font-editorial mt-0.5 text-2xl text-[#F4EDEF] font-bold">
               The 4-Pillar Rubric
@@ -80,12 +75,8 @@ export const RubricExplainerModal: React.FC<RubricExplainerModalProps> = ({ isOp
                   {idx + 1}. {p.title}
                 </span>
                 <span className="font-mono text-xs tabular-nums text-[#C69BA5] font-semibold">
-                  {p.weight}% weight
+                  AI-scored area
                 </span>
-              </div>
-
-              <div className="mb-2.5">
-                <ConfidenceRail value={p.weight * 2.8} />
               </div>
 
               <p className="lh-prose mb-2 text-sm text-[#D5BFC3] leading-relaxed">
@@ -99,6 +90,10 @@ export const RubricExplainerModal: React.FC<RubricExplainerModalProps> = ({ isOp
             </div>
           ))}
         </div>
+
+        <p className="mt-4 text-xs leading-relaxed text-[#B9A5AA]">
+          AI-generated scores and feedback can be mistaken or inconsistent. Use them for practice, not as a hiring decision or a verified measure of ability.
+        </p>
 
         {/* Footer */}
         <div className="mt-5 flex justify-end border-t border-[#513A42] pt-4">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DOMAINS } from '../data/domains';
+import { DOMAINS, OTHER_DOMAIN } from '../data/domains';
 import { DomainId, DifficultyLevel, InterviewLength } from '../types/interview';
 import { X, CornerDownLeft } from 'lucide-react';
 
@@ -10,9 +10,14 @@ interface DomainSelectorModalProps {
     domainId: DomainId,
     roleId: string,
     difficulty: DifficultyLevel,
-    length: InterviewLength
-  ) => void;
+    length: InterviewLength,
+    customProfession?: string
+  ) => Promise<void>;
   initialDomainId?: DomainId;
+  initialRoleId?: string;
+  initialCustomProfession?: string;
+  isGeneratingQuestions: boolean;
+  generationError: string;
 }
 
 export const DomainSelectorModal: React.FC<DomainSelectorModalProps> = ({
@@ -20,25 +25,33 @@ export const DomainSelectorModal: React.FC<DomainSelectorModalProps> = ({
   onClose,
   onStartInterview,
   initialDomainId = 'swe',
+  initialRoleId,
+  initialCustomProfession = '',
+  isGeneratingQuestions,
+  generationError,
 }) => {
+  const selectableDomains = [...DOMAINS, OTHER_DOMAIN];
   const [selectedDomainId, setSelectedDomainId] = useState<DomainId>(initialDomainId);
-  const currentDomain = DOMAINS.find((d) => d.id === selectedDomainId) || DOMAINS[0];
+  const [customProfession, setCustomProfession] = useState(initialCustomProfession);
+  const currentDomain = selectableDomains.find((d) => d.id === selectedDomainId) || DOMAINS[0];
 
   const [selectedRoleId, setSelectedRoleId] = useState<string>(currentDomain.roles[0].id);
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('senior');
-  const [length, setLength] = useState<InterviewLength>(3);
+  const [questionCountInput, setQuestionCountInput] = useState('5');
+  const length = Math.max(1, Math.floor(Number(questionCountInput) || 1));
 
   useEffect(() => {
     setSelectedDomainId(initialDomainId);
-    const domain = DOMAINS.find((d) => d.id === initialDomainId);
+    setCustomProfession(initialCustomProfession);
+    const domain = selectableDomains.find((d) => d.id === initialDomainId);
     if (domain && domain.roles.length > 0) {
-      setSelectedRoleId(domain.roles[0].id);
+      setSelectedRoleId(domain.roles.some((role) => role.id === initialRoleId) ? initialRoleId! : domain.roles[0].id);
     }
-  }, [initialDomainId, isOpen]);
+  }, [initialDomainId, initialRoleId, initialCustomProfession, isOpen]);
 
   const handleDomainChange = (id: DomainId) => {
     setSelectedDomainId(id);
-    const domain = DOMAINS.find((d) => d.id === id);
+    const domain = selectableDomains.find((d) => d.id === id);
     if (domain && domain.roles.length > 0) {
       setSelectedRoleId(domain.roles[0].id);
     }
@@ -75,7 +88,7 @@ export const DomainSelectorModal: React.FC<DomainSelectorModalProps> = ({
             Domain
           </label>
           <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-            {DOMAINS.map((domain) => {
+            {selectableDomains.map((domain) => {
               const isSel = domain.id === selectedDomainId;
               return (
                 <button
@@ -111,8 +124,26 @@ export const DomainSelectorModal: React.FC<DomainSelectorModalProps> = ({
           </div>
         </div>
 
+        {selectedDomainId === 'other' && (
+          <div className="mb-5">
+            <label htmlFor="custom-profession" className="mb-2 block font-ui text-xs uppercase tracking-wider text-[#B18A91]">
+              Profession or role
+            </label>
+            <input
+              id="custom-profession"
+              type="text"
+              value={customProfession}
+              onChange={(event) => setCustomProfession(event.target.value)}
+              placeholder="e.g. Dentist, Architect, UX Researcher"
+              maxLength={80}
+              className="w-full rounded-lg border border-[#513A42] bg-[#302329] px-3 py-2.5 text-sm text-[#F4EDEF] placeholder:text-[#B9A5AA] focus:border-[#C69BA5]"
+            />
+            <p className="mt-1.5 text-xs text-[#B9A5AA]">AI generates interview questions and evaluations tailored to this profession.</p>
+          </div>
+        )}
+
         {/* Step 2: Role Selection */}
-        <div className="mb-5">
+        {selectedDomainId !== 'other' && <div className="mb-5">
           <label className="mb-2 block font-ui text-xs uppercase tracking-wider text-[#B18A91]">
             Role Track in {currentDomain.shortTitle}
           </label>
@@ -151,7 +182,7 @@ export const DomainSelectorModal: React.FC<DomainSelectorModalProps> = ({
               );
             })}
           </div>
-        </div>
+        </div>}
 
         {/* Step 3: Difficulty & Length Row */}
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -186,27 +217,37 @@ export const DomainSelectorModal: React.FC<DomainSelectorModalProps> = ({
           </div>
 
           <div>
-            <label className="mb-1.5 block font-ui text-xs uppercase tracking-wider text-[#B18A91]">
-              Session Length
+            <label htmlFor="question-count" className="mb-1.5 block font-ui text-xs uppercase tracking-wider text-[#B18A91]">
+              Questions in this mock
             </label>
-            <div className="flex items-center gap-0.5 rounded-md border border-[#513A42] bg-[#302329] p-0.5">
-              {([3, 5] as InterviewLength[]).map((len) => (
-                <button
-                  key={len}
-                  type="button"
-                  onClick={() => setLength(len)}
-                  className={`flex-1 rounded-sm px-2 py-1 font-ui text-[11px] uppercase tracking-wider transition-colors ${
-                    length === len
-                      ? 'bg-[#754653] text-[#F4EDEF] font-semibold'
-                      : 'text-[#B9A5AA] hover:text-[#F4EDEF]'
-                  }`}
-                >
-                  {len} Questions ({len === 3 ? '~10m' : '~20m'})
-                </button>
-              ))}
-            </div>
+            <input
+              id="question-count"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={2}
+              value={questionCountInput}
+              onChange={(event) => setQuestionCountInput(event.target.value.replace(/\D/g, '').slice(0, 2))}
+              onBlur={() => {
+                const requestedCount = Number(questionCountInput) || 1;
+                setQuestionCountInput(String(Math.max(1, Math.min(requestedCount, 50))));
+              }}
+              className="w-full rounded-md border border-[#513A42] bg-[#302329] px-3 py-2 text-sm text-[#F4EDEF] focus:border-[#C69BA5] disabled:opacity-50"
+            />
+            <p className="mt-1 text-xs text-[#B9A5AA]">
+              AI generates {length} new question{length === 1 ? '' : 's'} for this mock (1–50 per session). Previous prompts are sent to help avoid repeats; question generation and answer evaluation use OpenAI.
+            </p>
           </div>
         </div>
+
+        {generationError && (
+          <p role="alert" className="mb-4 rounded-lg border border-red-400/30 bg-red-950/20 px-3 py-2.5 text-sm text-red-200">
+            {generationError}
+            {generationError.toLowerCase().includes('credits remaining') && (
+              <> <a className="underline underline-offset-2" href="https://platform.openai.com/settings/organization/billing/" target="_blank" rel="noreferrer">Open API billing settings</a>.</>
+            )}
+          </p>
+        )}
 
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-[#513A42] pt-4">
@@ -220,11 +261,12 @@ export const DomainSelectorModal: React.FC<DomainSelectorModalProps> = ({
 
           <button
             type="button"
-            onClick={() => onStartInterview(selectedDomainId, selectedRoleId, difficulty, length)}
+            disabled={isGeneratingQuestions || !questionCountInput || length > 50 || (selectedDomainId === 'other' && !customProfession.trim())}
+            onClick={() => onStartInterview(selectedDomainId, selectedRoleId, difficulty, length, customProfession.trim())}
             className="flex h-9 items-center gap-2 rounded-lg border border-[#B18A91]/50 bg-[#754653] px-5 font-ui text-xs font-bold text-[#F4EDEF] transition-all hover:bg-[#C6A0A7] hover:text-[#241910] shadow-md shadow-[#482832]/50"
           >
-            <span>Start session</span>
-            <CornerDownLeft className="w-3.5 h-3.5 text-[#F4EDEF]" />
+            <span>{isGeneratingQuestions ? 'Generating questions…' : 'Start session'}</span>
+            {!isGeneratingQuestions && <CornerDownLeft className="w-3.5 h-3.5 text-[#F4EDEF]" />}
           </button>
         </div>
       </div>
